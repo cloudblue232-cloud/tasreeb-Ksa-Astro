@@ -1,0 +1,57 @@
+---
+import type { Article } from '@saudi-leaks/shared/types'
+
+interface Props { articles: Article[] }
+const { articles } = Astro.props
+
+function stripHtml(html: string) {
+  return html.replace(/<[^>]*>/g, '')
+}
+function truncate(str: string, n: number) {
+  return str.length > n ? str.slice(0, n) + '...' : str
+}
+---
+
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-4">أحدث المقالات</h2>
+      <p class="text-gray-500 max-w-xl mx-auto">نصائح واحترافية من خبراء كشف التسربات</p>
+    </div>
+
+    {articles.length === 0 ? (
+      <p class="text-center text-gray-400 py-10">لا توجد مقالات حتى الآن</p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {articles.map((article, i) => (
+          <a href={`/articles/${article.slug}`} id={`home-article-card-${i + 1}`}
+            class="card-hover group block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200">
+            <div class="h-40 bg-gradient-to-br from-blue-50 to-indigo-100 relative flex items-center justify-center">
+              {article.image_url ? (
+                <img src={article.image_url} alt={article.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <span class="text-5xl opacity-20">📰</span>
+              )}
+            </div>
+            <div class="p-4">
+              <p class="text-xs text-gray-400 mb-2">
+                {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </p>
+              <h3 class="font-bold text-gray-900 text-sm leading-snug group-hover:text-blue-600 transition-colors mb-2">
+                {article.title}
+              </h3>
+              <p class="text-gray-500 text-xs leading-relaxed line-clamp-3">
+                {truncate(stripHtml(article.content), 100)}
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="text-center mt-10">
+      <a href="/articles" id="home-all-articles-btn" class="btn-primary">كل المقالات</a>
+    </div>
+  </div>
+</section>

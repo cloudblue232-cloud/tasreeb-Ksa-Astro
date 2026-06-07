@@ -1,0 +1,39 @@
+---
+const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
+---
+
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 gap-4">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 flex-shrink-0">
+        <span class="text-2xl">🔍</span>
+        <span class="font-extrabold text-blue-900 text-sm sm:text-base leading-tight hidden sm:block">
+          كشف التسربات<br /><span class="text-blue-600 font-normal text-xs">والعزل بالسعودية</span>
+        </span>
+      </a>
+
+      <!-- Nav -->
+      <nav class="hidden md:flex items-center gap-6">
+        <a href="/" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">الرئيسية</a>
+        <a href="/services" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">خدماتنا</a>
+        <a href="/articles" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">المقالات</a>
+      </nav>
+
+      <!-- CTA -->
+      <div class="flex items-center gap-2">
+        <a href={`tel:${PHONE}`} id="header-call-btn"
+          class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-700 border-2 border-blue-200 rounded-full hover:bg-blue-50 transition-colors">
+          📞 اتصل الآن
+        </a>
+        <a href={waLink} id="header-wa-btn" target="_blank" rel="noopener noreferrer"
+          class="btn-whatsapp !py-2 !px-4 !text-sm">
+          واتساب
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

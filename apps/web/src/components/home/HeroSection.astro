@@ -1,0 +1,57 @@
+---
+const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
+---
+
+<section class="bg-gradient-hero relative overflow-hidden py-20 sm:py-28">
+  <!-- Decorative circles -->
+  <div class="absolute top-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+  <div class="absolute bottom-0 right-0 w-72 h-72 bg-blue-300/10 rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <span class="inline-block bg-blue-500/30 text-blue-100 text-sm font-semibold px-4 py-1.5 rounded-full mb-5">
+        🛡️ متاحون 24/7 لخدمتكم
+      </span>
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+        كشف التسربات والعزل<br />
+        <span class="text-blue-200">بالمملكة العربية السعودية</span>
+      </h1>
+      <p class="text-blue-100 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
+        خدمات احترافية متكاملة في كشف تسربات المياه وعزل الأسطح والخزانات والمسابح
+        بأحدث التقنيات وأعلى معايير الجودة
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href={`tel:${PHONE}`} id="hero-call-btn" class="btn-primary text-base !py-3.5 !px-7">
+          📞 اتصل الآن مجاناً
+        </a>
+        <a href={waLink} id="hero-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp text-base !py-3.5 !px-7">
+          💬 واتساب مباشر
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+      {[
+        { num: '+15', label: 'سنة خبرة' },
+        { num: '+5000', label: 'عميل راضٍ' },
+        { num: '95%', label: 'نسبة الرضا' },
+        { num: '24/7', label: 'خدمة مستمرة' },
+      ].map(s => (
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl py-4 px-3 text-center border border-white/20">
+          <div class="text-2xl sm:text-3xl font-extrabold text-white mb-1">{s.num}</div>
+          <div class="text-blue-200 text-xs sm:text-sm font-medium">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Wave divider -->
+  <div class="absolute bottom-0 left-0 right-0">
+    <svg viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 50L1440 50L1440 25C1200 5 960 0 720 12C480 24 240 38 0 25V50Z" fill="white"/>
+    </svg>
+  </div>
+</section>

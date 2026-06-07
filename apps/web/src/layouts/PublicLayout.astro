@@ -1,0 +1,25 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import Header from '../components/layout/Header.astro'
+import Footer from '../components/layout/Footer.astro'
+import FloatingWhatsApp from '../components/shared/FloatingWhatsApp.astro'
+
+interface Props {
+  title: string
+  description?: string
+  image?: string
+  canonical?: string
+}
+
+const { title, description, image, canonical } = Astro.props
+---
+
+<BaseLayout title={title} description={description} image={image} canonical={canonical}>
+  <slot name="head" slot="head" />
+  <Header />
+  <main>
+    <slot />
+  </main>
+  <Footer />
+  <FloatingWhatsApp />
+</BaseLayout>

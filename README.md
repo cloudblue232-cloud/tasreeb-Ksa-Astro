@@ -1,0 +1,86 @@
+# كشف التسربات والعزل بالسعودية
+
+موقع ويب متكامل لخدمات كشف التسربات والعزل في المملكة العربية السعودية.
+
+## 🏗️ Architecture — Turborepo Monorepo
+
+```
+saudi-leaks/
+├── apps/
+│   ├── web/          → Public site  (yourdomain.com)     port 3000
+│   └── admin/        → Admin panel  (admin.yourdomain.com) port 3001
+├── packages/
+│   └── shared/       → Supabase clients, types, utils
+├── supabase/
+│   ├── schema.sql    → Database schema + RLS policies
+│   └── seed.sql      → Sample Arabic content
+└── turbo.json        → Build pipeline config
+```
+
+## 🚀 Getting Started
+
+### 1. Install dependencies
+```bash
+npm install
+```
+
+### 2. Set up environment variables
+```bash
+# Copy for both apps
+cp apps/web/.env.local.example apps/web/.env.local
+cp apps/admin/.env.local.example apps/admin/.env.local
+# Fill in your Supabase credentials in both files
+```
+
+### 3. Set up Supabase
+1. Create project at [supabase.com](https://supabase.com)
+2. Run `supabase/schema.sql` in the SQL Editor
+3. Run `supabase/seed.sql` for sample data
+4. Create storage bucket named `uploads` (public)
+5. Create admin user in Authentication → Users
+
+### 4. Run both apps
+```bash
+# Run both simultaneously (recommended)
+npx turbo dev
+
+# Or individually
+cd apps/web   && npm run dev   # → http://localhost:3000
+cd apps/admin && npm run dev   # → http://localhost:3001
+```
+
+### 5. Build for production
+```bash
+npx turbo build
+```
+
+## 📦 Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Styling | Tailwind CSS v4 |
+| Database | Supabase (PostgreSQL) |
+| Auth | Supabase Auth |
+| Storage | Supabase Storage |
+| Monorepo | Turborepo + npm workspaces |
+| Language | Arabic (RTL) |
+| Font | Cairo (Google Fonts) |
+
+## 🔒 Security
+
+- **Public site** has zero admin code — smaller bundle, no admin routes exposed
+- **Admin site** runs on a separate domain — entire app behind auth proxy
+- **RLS policies** — anonymous users can only read; admin can write
+- **Server-side auth guard** in admin layout as double protection
+
+## 🚀 Deployment (Vercel)
+
+Deploy **two separate Vercel projects** from the same repo:
+
+| Project | Root Directory | Domain |
+|---------|---------------|--------|
+| `saudi-leaks-web` | `apps/web` | `yourdomain.com` |
+| `saudi-leaks-admin` | `apps/admin` | `admin.yourdomain.com` |
+
+Both projects use the same environment variables.

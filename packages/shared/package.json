@@ -1,0 +1,21 @@
+{
+  "name": "@saudi-leaks/shared",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./types": "./types.ts",
+    "./utils": "./utils.ts",
+    "./supabase/client": "./supabase/client.ts",
+    "./supabase/server": "./supabase/server.ts",
+    "./supabase/static": "./supabase/static.ts",
+    "./supabase/admin": "./supabase/admin.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/ssr": "^0.6.1"
+  },
+  "devDependencies": {
+    "next": "^16.2.3",
+    "typescript": "^5"
+  }
+}

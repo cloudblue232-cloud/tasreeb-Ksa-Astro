@@ -1,0 +1,50 @@
+---
+const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+---
+
+<footer class="bg-blue-950 text-white pt-14 pb-6 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
+
+      <!-- Brand -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-3xl">🔍</span>
+          <span class="font-extrabold text-xl">كشف التسربات والعزل بالسعودية</span>
+        </div>
+        <p class="text-blue-200 text-sm leading-relaxed max-w-xs">
+          شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في جميع أنحاء المملكة العربية السعودية.
+        </p>
+        <div class="flex items-center gap-3 mt-5">
+          <a href={`tel:${PHONE}`} class="text-blue-200 hover:text-white text-sm transition-colors">📞 {PHONE}</a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="font-bold text-white mb-4">روابط سريعة</h3>
+        <ul class="space-y-2">
+          {[['/', 'الرئيسية'], ['/services', 'خدماتنا'], ['/articles', 'المقالات']].map(([href, label]) => (
+            <li><a href={href} class="text-blue-200 hover:text-white text-sm transition-colors">{label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <h3 class="font-bold text-white mb-4">خدماتنا</h3>
+        <ul class="space-y-2 text-blue-200 text-sm">
+          <li>كشف تسربات المياه</li>
+          <li>عزل الأسطح والجدران</li>
+          <li>عزل الخزانات والمسابح</li>
+          <li>كشف تسربات الغاز</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-blue-800 pt-6 text-center text-blue-300 text-xs">
+      © {new Date().getFullYear()} كشف التسربات والعزل بالسعودية — جميع الحقوق محفوظة
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,44 @@
+---
+const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
+---
+
+<section class="py-20 bg-gray-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Trust badges -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-14">
+      {[
+        { icon: '🏅', title: 'مرخص رسمياً', sub: 'من الجهات الحكومية' },
+        { icon: '🛡️', title: 'ضمان الجودة', sub: 'ضمان شامل على الأعمال' },
+        { icon: '⚡', title: 'استجابة فورية', sub: 'خلال 60 دقيقة' },
+        { icon: '💰', title: 'أسعار تنافسية', sub: 'فحص مجاني' },
+      ].map(b => (
+        <div class="bg-white rounded-2xl p-5 text-center border border-gray-100 shadow-sm">
+          <div class="text-3xl mb-2">{b.icon}</div>
+          <div class="font-bold text-gray-900 text-sm">{b.title}</div>
+          <div class="text-gray-400 text-xs mt-1">{b.sub}</div>
+        </div>
+      ))}
+    </div>
+
+    <!-- CTA Banner -->
+    <div class="bg-gradient-hero rounded-3xl p-10 sm:p-14 text-center text-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-blue-400/10 rounded-3xl pointer-events-none"></div>
+      <div class="relative">
+        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3">هل تشك في وجود تسرب في منزلك؟</h2>
+        <p class="text-blue-100 text-lg mb-8 max-w-xl mx-auto">
+          لا تنتظر حتى تتفاقم المشكلة — تواصل معنا الآن للحصول على كشف مجاني
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href={`tel:${PHONE}`} id="cta-call-btn" class="btn-primary !bg-white !text-blue-700 hover:!bg-blue-50">
+            📞 اتصل مجاناً
+          </a>
+          <a href={waLink} id="cta-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+            واتساب مباشر
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

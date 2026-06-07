@@ -1,0 +1,72 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro'
+import { createClient as createStaticClient } from '../../lib/supabase'
+
+const supabase = createStaticClient()
+const { data: services } = await supabase.from('services').select('*').eq('published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: true })
+
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
+
+const icons: Record<string, string> = {
+  'kashf-tasaroubat-almaya': '🔍',
+  'azl-alsotouh-waljedran': '🏗️',
+  'azl-alkhazanat-walmasabeh': '🏊',
+  'kashf-tasaroubat-algaz': '⚠️',
+  'moualajat-alrotuba-wa-izalat-alaofoun': '💧',
+  'syanat-wa-islah-tasaroubat-alsibaka': '🔧',
+}
+---
+
+<PublicLayout
+  title="خدماتنا"
+  description="تعرف على جميع خدماتنا في كشف تسربات المياه وعزل الأسطح والخزانات والمسابح في المملكة العربية السعودية"
+>
+  <!-- Hero -->
+  <div class="bg-gradient-hero py-16 text-center relative overflow-hidden">
+    <div class="relative max-w-4xl mx-auto px-4">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">خدماتنا المتخصصة</h1>
+      <p class="text-blue-100 text-lg max-w-2xl mx-auto">حلول احترافية شاملة لكشف التسربات والعزل في جميع أنحاء المملكة</p>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 40" fill="none"><path d="M0 40L1440 40L1440 20C1200 0 960 0 720 10C480 20 240 30 0 20V40Z" fill="white"/></svg>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    {!services || services.length === 0 ? (
+      <p class="text-center text-gray-400 py-20">لا توجد خدمات متاحة حالياً</p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {services.map((service, i) => (
+          <a href={`/services/${service.slug}`} id={`service-card-${i + 1}`}
+            class="card-hover group block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200">
+            <div class="w-full h-52 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+              {service.image_url ? (
+                <img src={service.image_url} alt={service.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <span class="text-7xl">{icons[service.slug] || '🔧'}</span>
+              )}
+            </div>
+            <div class="p-6">
+              <h2 class="text-xl font-bold text-blue-900 mb-3 group-hover:text-blue-600 transition-colors">{service.title}</h2>
+              <p class="text-gray-500 text-sm leading-relaxed line-clamp-4">{service.description}</p>
+              <span class="mt-4 inline-flex items-center gap-1 text-blue-600 font-bold text-sm">التفاصيل ←</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- Bottom CTA -->
+    <div class="mt-16 bg-gradient-to-r from-blue-600 to-blue-900 rounded-3xl p-10 text-center text-white">
+      <h2 class="text-2xl font-extrabold mb-3">هل تحتاج إلى خدمتنا؟</h2>
+      <p class="text-blue-100 mb-7">تواصل معنا الآن واحصل على استشارة مجانية</p>
+      <a href={waLink} id="services-cta-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp text-base">
+        واتساب مباشر
+      </a>
+    </div>
+  </div>
+</PublicLayout>

@@ -1,0 +1,93 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro'
+import { createClient as createStaticClient } from '../../lib/supabase'
+
+const supabase = createStaticClient()
+const { slug } = Astro.params
+
+const [{ data: service }, { data: others }] = await Promise.all([
+  supabase.from('services').select('*').eq('slug', slug).eq('published', true).single(),
+  supabase.from('services').select('id, title, slug').neq('slug', slug).limit(4),
+])
+
+if (!service) return Astro.redirect('/services')
+
+const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
+const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`مرحباً، أريد الاستفسار عن خدمة: ${service.title}`)}`
+
+const icons: Record<string, string> = {
+  'kashf-tasaroubat-almaya': '🔍', 'azl-alsotouh-waljedran': '🏗️',
+  'azl-alkhazanat-walmasabeh': '🏊', 'kashf-tasaroubat-algaz': '⚠️',
+  'moualajat-alrotuba-wa-izalat-alaofoun': '💧', 'syanat-wa-islah-tasaroubat-alsibaka': '🔧',
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: service.title, description: service.description,
+  provider: { '@type': 'LocalBusiness', name: 'كشف التسربات والعزل بالسعودية' },
+  areaServed: 'SA',
+}
+---
+
+<PublicLayout title={service.title} description={service.description.slice(0, 160)}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Hero -->
+  <div class="bg-gradient-hero py-14 relative overflow-hidden">
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 40" fill="none"><path d="M0 40L1440 40L1440 20C1200 0 960 0 720 10C480 20 240 30 0 20V40Z" fill="white"/></svg>
+    </div>
+    <div class="relative max-w-5xl mx-auto px-4 text-center">
+      <a href="/services" class="inline-flex items-center gap-2 text-blue-200 hover:text-white mb-6 text-sm transition-colors">← جميع الخدمات</a>
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">{service.title}</h1>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid lg:grid-cols-3 gap-10">
+      <div class="lg:col-span-2">
+        <!-- Image -->
+        <div class="w-full h-72 rounded-2xl overflow-hidden mb-8 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+          {service.image_url ? (
+            <img src={service.image_url} alt={service.title} class="w-full h-full object-cover" />
+          ) : (
+            <span class="text-9xl">{icons[service.slug] || '🔧'}</span>
+          )}
+        </div>
+        <!-- Description -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+          <h2 class="text-2xl font-bold text-blue-900 mb-6 border-b border-blue-50 pb-4">نبذة عن الخدمة</h2>
+          <p class="text-gray-700 leading-loose text-lg">{service.description}</p>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="space-y-5">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center sticky top-24">
+          <div class="text-5xl mb-4">📞</div>
+          <h3 class="font-extrabold text-xl mb-2">احصل على عرض السعر</h3>
+          <p class="text-blue-100 text-sm mb-6">فحص مجاني وعرض سعر فوري</p>
+          <a href={`tel:${PHONE}`} id="service-detail-call-btn" class="btn-primary w-full justify-center mb-3 !rounded-xl block text-center">اتصل الآن</a>
+          <a href={waLink} id="service-detail-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp w-full justify-center !rounded-xl block text-center">واتساب</a>
+        </div>
+
+        {others && others.length > 0 && (
+          <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+            <h3 class="font-bold text-gray-900 mb-4">خدمات أخرى</h3>
+            <ul class="space-y-2">
+              {others.map(s => (
+                <li>
+                  <a href={`/services/${s.slug}`} class="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors py-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-300 flex-shrink-0"></span>{s.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</PublicLayout>

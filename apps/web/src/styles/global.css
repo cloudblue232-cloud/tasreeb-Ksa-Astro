@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cairo: 'Cairo', sans-serif;
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-900: #1e3a8a;
+}
+
+/* Base */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-cairo), sans-serif;
+  direction: rtl;
+  text-align: right;
+  -webkit-font-smoothing: antialiased;
+  color: #111827;
+  background: #fff;
+}
+
+/* Gradients */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%);
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px 0 rgba(37,99,235,0.35);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(37,99,235,0.45);
+}
+
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px 0 rgba(22,163,74,0.35);
+}
+.btn-whatsapp:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(22,163,74,0.45);
+}
+
+/* Cards */
+.card-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* Prose (article HTML content) */
+.prose-arabic {
+  line-height: 2;
+  color: #374151;
+  font-size: 1.05rem;
+}
+.prose-arabic h2 { font-size: 1.5rem; font-weight: 800; color: #1e3a8a; margin: 2rem 0 1rem; }
+.prose-arabic h3 { font-size: 1.25rem; font-weight: 700; color: #1d4ed8; margin: 1.5rem 0 0.75rem; }
+.prose-arabic p  { margin-bottom: 1.25rem; }
+.prose-arabic ul { list-style: disc; padding-right: 1.5rem; margin-bottom: 1.25rem; }
+.prose-arabic li { margin-bottom: 0.4rem; }
+.prose-arabic strong { color: #1e3a8a; font-weight: 700; }
+
+/* Line clamp utilities */
+.line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.line-clamp-4 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }

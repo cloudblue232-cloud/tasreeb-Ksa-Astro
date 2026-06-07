@@ -1,0 +1,44 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro'
+---
+
+<PublicLayout title="الصفحة غير موجودة">
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div class="text-center max-w-lg mx-auto">
+      <!-- Animated 404 -->
+      <div class="relative mb-8">
+        <p class="text-9xl font-extrabold text-blue-100 select-none">404</p>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-6xl">🔍</span>
+        </div>
+      </div>
+
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-4">الصفحة غير موجودة</h1>
+      <p class="text-gray-500 text-lg mb-8 leading-relaxed">
+        عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/" id="404-home-btn" class="btn-primary">
+          🏠 العودة للرئيسية
+        </a>
+        <a href="/services" id="404-services-btn"
+          class="px-6 py-3 rounded-full border-2 border-blue-200 text-blue-700 font-bold hover:bg-blue-50 transition-colors">
+          عرض الخدمات
+        </a>
+      </div>
+
+      <!-- Quick links -->
+      <div class="mt-12 grid grid-cols-2 gap-3 max-w-xs mx-auto">
+        {[
+          ['/services', '🔧', 'الخدمات'],
+          ['/articles', '📰', 'المقالات'],
+        ].map(([href, icon, label]) => (
+          <a href={href} class="flex items-center gap-2 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:border-blue-200 transition-all text-sm font-semibold text-gray-700 hover:text-blue-600">
+            <span class="text-xl">{icon}</span> {label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</PublicLayout>

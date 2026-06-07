@@ -1,0 +1,59 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro'
+import { createClient as createStaticClient } from '../../lib/supabase'
+
+const supabase = createStaticClient()
+const { data: articles } = await supabase.from('articles').select('*').eq('published', true).order('created_at', { ascending: false })
+
+function stripHtml(html: string) { return html.replace(/<[^>]*>/g, '') }
+function truncate(s: string, n: number) { return s.length > n ? s.slice(0, n) + '...' : s }
+---
+
+<PublicLayout
+  title="المقالات والنصائح"
+  description="مقالات ونصائح احترافية حول كشف تسربات المياه وعزل الأسطح والخزانات في المملكة العربية السعودية"
+>
+  <div class="bg-gradient-hero py-16 text-center relative overflow-hidden">
+    <div class="relative max-w-4xl mx-auto px-4">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">المقالات والنصائح</h1>
+      <p class="text-blue-100 text-lg max-w-2xl mx-auto">محتوى متخصص يساعدك على الكشف المبكر عن التسربات</p>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 40" fill="none"><path d="M0 40L1440 40L1440 20C1200 0 960 0 720 10C480 20 240 30 0 20V40Z" fill="white"/></svg>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    {!articles || articles.length === 0 ? (
+      <p class="text-center text-gray-400 py-20">لا توجد مقالات متاحة حالياً</p>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {articles.map((article, i) => (
+          <a href={`/articles/${article.slug}`} id={`article-card-${i + 1}`}
+            class="card-hover group block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200">
+            <div class="h-48 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+              {article.image_url ? (
+                <img src={article.image_url} alt={article.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <span class="text-6xl opacity-20">📰</span>
+              )}
+            </div>
+            <div class="p-6 flex flex-col h-auto">
+              <p class="text-xs text-gray-400 mb-3">
+                {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+              <h2 class="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-snug">
+                {article.title}
+              </h2>
+              <p class="text-gray-500 text-sm leading-relaxed line-clamp-3 mb-4">
+                {truncate(stripHtml(article.content), 120)}
+              </p>
+              <span class="inline-flex items-center gap-1 text-blue-600 font-bold text-sm mt-auto">اقرأ المزيد ←</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</PublicLayout>

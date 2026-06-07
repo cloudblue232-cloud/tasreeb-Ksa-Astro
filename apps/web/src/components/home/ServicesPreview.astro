@@ -1,0 +1,54 @@
+---
+import type { Service } from '@saudi-leaks/shared/types'
+
+interface Props { services: Service[] }
+const { services } = Astro.props
+
+const icons: Record<string, string> = {
+  'kashf-tasaroubat-almaya': '🔍',
+  'azl-alsotouh-waljedran': '🏗️',
+  'azl-alkhazanat-walmasabeh': '🏊',
+  'kashf-tasaroubat-algaz': '⚠️',
+  'moualajat-alrotuba-wa-izalat-alaofoun': '💧',
+  'syanat-wa-islah-tasaroubat-alsibaka': '🔧',
+}
+---
+
+<section class="py-20 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-900 mb-4">خدماتنا المتخصصة</h2>
+      <p class="text-gray-500 max-w-xl mx-auto">حلول شاملة لكشف التسربات والعزل في جميع أنحاء المملكة</p>
+    </div>
+
+    {services.length === 0 ? (
+      <p class="text-center text-gray-400 py-10">جاري تحميل الخدمات...</p>
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {services.slice(0, 6).map((service, i) => (
+          <a href={`/services/${service.slug}`} id={`home-service-card-${i + 1}`}
+            class="card-hover group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200 block">
+            <div class="w-full h-44 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+              {service.image_url ? (
+                <img src={service.image_url} alt={service.title}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <span class="text-7xl">{icons[service.slug] || '🔧'}</span>
+              )}
+            </div>
+            <div class="p-5">
+              <h3 class="text-lg font-bold text-blue-900 mb-2 group-hover:text-blue-600 transition-colors">{service.title}</h3>
+              <p class="text-gray-500 text-sm leading-relaxed line-clamp-3">{service.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="text-center mt-10">
+      <a href="/services" id="home-all-services-btn" class="btn-primary">
+        عرض جميع الخدمات
+      </a>
+    </div>
+  </div>
+</section>
