@@ -1,7 +1,7 @@
 import { createClient } from '@saudi-leaks/shared/supabase/server'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-
+import { SITE_URL } from '@saudi-leaks/shared/utils'
 export const metadata: Metadata = { title: 'لوحة التحكم | Admin' }
 
 export default async function AdminDashboard() {
@@ -50,7 +50,7 @@ export default async function AdminDashboard() {
           <Link href="/admin/services/new" id="dashboard-new-service-btn" className="btn-primary !text-sm !bg-indigo-600 hover:!bg-indigo-700">
             ➕ خدمة جديدة
           </Link>
-          <Link href="/" target="_blank" id="dashboard-view-site-btn" className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors flex items-center gap-2">
+          <Link href={SITE_URL} target="_blank" id="dashboard-view-site-btn" className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors flex items-center gap-2">
             👁️ عرض الموقع
           </Link>
         </div>
