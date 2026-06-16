@@ -71,7 +71,7 @@ function insertTag(tag: string) {
 
     if (!url) return
 
-    snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selected || 'رابط'}</a>`
+    snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline" >${selected || 'رابط'}</a>`
   } else if (tag === 'ul-li') {
     snippet = `<ul>\n  <li>${selected || 'عنصر القائمة'}</li>\n</ul>`
   } else {
