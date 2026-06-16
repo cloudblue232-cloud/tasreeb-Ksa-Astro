@@ -111,10 +111,10 @@ export default async function AdminServicesPage({
                           className="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
                           تعديل
                         </Link>
-                        <Link href={`/services/${service.slug}`} target="_blank"
+                        <a href={`${process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || ''}/services/${service.slug}`} target="_blank" rel="noopener noreferrer"
                           className="text-xs font-bold text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
                           عرض
-                        </Link>
+                        </a>
                         <form action={deleteService}>
                           <input type="hidden" name="id" value={service.id} />
                           <input type="hidden" name="slug" value={service.slug} />
