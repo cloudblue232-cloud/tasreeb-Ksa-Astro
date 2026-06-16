@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import DeleteButton from '@/components/admin/DeleteButton'
+import { revalidateAstroPaths } from '@/app/actions/revalidate'
 
 export const metadata: Metadata = { title: 'إدارة المقالات | Admin' }
 
@@ -30,8 +31,13 @@ export default async function AdminArticlesPage({
   async function deleteArticle(formData: FormData) {
     'use server'
     const id = formData.get('id') as string
+    const slug = formData.get('slug') as string
     const supabase = await createClient()
     await supabase.from('articles').delete().eq('id', id)
+    
+    // Trigger ISR revalidation
+    await revalidateAstroPaths(['/', '/articles', `/articles/${slug}`])
+    
     redirect('/admin/articles')
   }
 
@@ -104,6 +110,7 @@ export default async function AdminArticlesPage({
                         </Link>
                         <form action={deleteArticle}>
                           <input type="hidden" name="id" value={article.id} />
+                          <input type="hidden" name="slug" value={article.slug} />
                           <DeleteButton id={`delete-article-${article.id}`} message="هل أنت متأكد من حذف هذا المقال؟" />
                         </form>
                       </div>

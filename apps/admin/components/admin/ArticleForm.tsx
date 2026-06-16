@@ -6,6 +6,7 @@ import { createClient } from '@saudi-leaks/shared/supabase/client'
 import { slugify } from '@saudi-leaks/shared/utils'
 import ImageUpload from './ImageUpload'
 import type { Article, ArticleInsert } from '@saudi-leaks/shared/types'
+import { revalidateAstroPaths } from '@/app/actions/revalidate'
 
 interface ArticleFormProps {
   article?: Article
@@ -71,7 +72,7 @@ function insertTag(tag: string) {
 
     if (!url) return
 
-    snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline" >${selected || 'رابط'}</a>`
+    snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline" >${selected || 'رابط'}</a>`
   } else if (tag === 'ul-li') {
     snippet = `<ul>\n  <li>${selected || 'عنصر القائمة'}</li>\n</ul>`
   } else {
@@ -121,6 +122,10 @@ function insertTag(tag: string) {
 
     if (err) { setError(err.message); setLoading(false); return }
     setIsDirty(false)
+
+    // Trigger Vercel ISR Revalidation for public site
+    await revalidateAstroPaths(['/', '/articles', `/articles/${slug}`])
+
     router.push('/admin/articles')
     router.refresh()
   }

@@ -6,6 +6,7 @@ import { createClient } from '@saudi-leaks/shared/supabase/client'
 import { slugify } from '@saudi-leaks/shared/utils'
 import ImageUpload from './ImageUpload'
 import type { Service, ServiceInsert } from '@saudi-leaks/shared/types'
+import { revalidateAstroPaths } from '@/app/actions/revalidate'
 
 interface ServiceFormProps {
   service?: Service
@@ -70,6 +71,10 @@ export default function ServiceForm({ service }: ServiceFormProps) {
     if (err) { setError(err.message); setLoading(false); return }
 
     setIsDirty(false)
+
+    // Trigger Vercel ISR Revalidation for public site
+    await revalidateAstroPaths(['/', '/services', `/services/${slug}`])
+
     router.push('/admin/services')
     router.refresh()
   }

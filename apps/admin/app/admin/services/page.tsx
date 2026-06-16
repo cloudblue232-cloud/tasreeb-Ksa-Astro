@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import DeleteButton from '@/components/admin/DeleteButton'
+import { revalidateAstroPaths } from '@/app/actions/revalidate'
 
 export const metadata: Metadata = { title: 'إدارة الخدمات | Admin' }
 
@@ -31,8 +32,13 @@ export default async function AdminServicesPage({
   async function deleteService(formData: FormData) {
     'use server'
     const id = formData.get('id') as string
+    const slug = formData.get('slug') as string
     const supabase = await createClient()
     await supabase.from('services').delete().eq('id', id)
+    
+    // Trigger ISR revalidation
+    await revalidateAstroPaths(['/', '/services', `/services/${slug}`])
+
     redirect('/admin/services')
   }
 
@@ -111,6 +117,7 @@ export default async function AdminServicesPage({
                         </Link>
                         <form action={deleteService}>
                           <input type="hidden" name="id" value={service.id} />
+                          <input type="hidden" name="slug" value={service.slug} />
                           <DeleteButton id={`delete-service-${service.id}`} message="هل أنت متأكد من حذف هذه الخدمة؟" />
                         </form>
                       </div>

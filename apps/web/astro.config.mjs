@@ -9,6 +9,8 @@ export default defineConfig({
     isr: {
       // Revalidate all pages every hour (like Next.js revalidate: 3600)
       expiration: 3600,
+      // Allow on-demand purging from the Admin Dashboard
+      bypassToken: process.env.REVALIDATION_TOKEN,
     },
   }),
   vite: {

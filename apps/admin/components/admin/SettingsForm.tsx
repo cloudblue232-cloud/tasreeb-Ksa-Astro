@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@saudi-leaks/shared/supabase/client'
 import type { SiteSettings } from '@saudi-leaks/shared/types'
+import { revalidateAstroPaths } from '@/app/actions/revalidate'
 
 const FIELDS: { key: keyof SiteSettings; label: string; hint: string; type?: string; dir?: string }[] = [
   {
@@ -80,6 +81,10 @@ export default function SettingsForm() {
       setError(err.message)
     } else {
       setSuccess(true)
+      
+      // Trigger Vercel ISR Revalidation for main pages since settings affect Header/Footer globally
+      await revalidateAstroPaths(['/', '/articles', '/services'])
+
       setTimeout(() => setSuccess(false), 4000)
     }
     setSaving(false)
