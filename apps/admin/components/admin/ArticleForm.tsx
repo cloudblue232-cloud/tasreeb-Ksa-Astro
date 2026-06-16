@@ -13,11 +13,13 @@ interface ArticleFormProps {
 
 // Simple rich-text toolbar actions
 const TOOLBAR_ACTIONS = [
+  { label: 'H1', tag: 'h1', title: 'عنوان رئيسي كبير' },
   { label: 'H2', tag: 'h2', title: 'عنوان رئيسي' },
   { label: 'H3', tag: 'h3', title: 'عنوان فرعي' },
   { label: 'P', tag: 'p', title: 'فقرة' },
   { label: 'B', tag: 'strong', title: 'عريض' },
   { label: 'UL', tag: 'ul-li', title: 'قائمة' },
+  { label: 'Link', tag: 'a', title: 'رابط (مع عنوان)' },
 ]
 
 export default function ArticleForm({ article }: ArticleFormProps) {
@@ -54,29 +56,45 @@ export default function ArticleForm({ article }: ArticleFormProps) {
   }
 
   // Insert HTML tag wrapper at cursor position in textarea
-  function insertTag(tag: string) {
-    const ta = textareaRef.current
-    if (!ta) return
-    const start = ta.selectionStart
-    const end = ta.selectionEnd
-    const selected = content.slice(start, end)
+function insertTag(tag: string) {
+  const ta = textareaRef.current
+  if (!ta) return
 
-    let snippet = ''
-    if (tag === 'ul-li') {
-      snippet = `<ul>\n  <li>${selected || 'عنصر القائمة'}</li>\n</ul>`
-    } else {
-      snippet = `<${tag}>${selected || `نص ${tag}`}</${tag}>`
-    }
+  const start = ta.selectionStart
+  const end = ta.selectionEnd
+  const selected = content.slice(start, end)
 
-    const newContent = content.slice(0, start) + snippet + content.slice(end)
-    setContent(newContent)
-    markDirty()
-    // Restore focus + cursor
-    setTimeout(() => {
-      ta.focus()
-      ta.setSelectionRange(start + snippet.length, start + snippet.length)
-    }, 0)
+  let snippet = ''
+
+  if (tag === 'a') {
+    const url = prompt('أدخل الرابط', 'https://')
+
+    if (!url) return
+
+    snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selected || 'رابط'}</a>`
+  } else if (tag === 'ul-li') {
+    snippet = `<ul>\n  <li>${selected || 'عنصر القائمة'}</li>\n</ul>`
+  } else {
+    snippet = `<${tag}>${selected || `نص ${tag}`}</${tag}>`
   }
+
+  const newContent =
+    content.slice(0, start) +
+    snippet +
+    content.slice(end)
+
+  setContent(newContent)
+  markDirty()
+
+  setTimeout(() => {
+    ta.focus()
+    ta.setSelectionRange(
+      start + snippet.length,
+      start + snippet.length
+    )
+  }, 0)
+}
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
