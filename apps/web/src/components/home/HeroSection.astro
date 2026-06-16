@@ -1,6 +1,8 @@
 ---
-const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const PHONE = settings.phone
+const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
 ---
 

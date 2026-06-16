@@ -1,5 +1,5 @@
 -- ============================================================
--- Migration v2 — Enhancements
+-- Migration v2 → v3 — Enhancements + Site Settings
 -- Run this in Supabase SQL Editor for EXISTING projects
 -- ============================================================
 
@@ -76,5 +76,48 @@ CREATE POLICY "services_delete_admin"
   ON services FOR DELETE TO authenticated
   USING (auth.email() = current_setting('app.admin_email', true));
 
--- Set your admin email (run this separately after the migration)
--- ALTER DATABASE postgres SET app.admin_email = 'your@email.com';
+-- Set your admin email (already set if you ran migration v2)
+-- ALTER DATABASE postgres SET app.admin_email = 'cloudblue232@gmail.com';
+
+-- ============================================================
+-- v3: SITE SETTINGS TABLE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS site_settings (
+  id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  key        TEXT UNIQUE NOT NULL,
+  value      TEXT NOT NULL DEFAULT '',
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+);
+
+CREATE TRIGGER site_settings_updated_at
+  BEFORE UPDATE ON site_settings
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- RLS
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read settings (needed for public site)
+CREATE POLICY "site_settings_select_public"
+  ON site_settings FOR SELECT
+  TO anon, authenticated
+  USING (true);
+
+-- Only admin can write
+CREATE POLICY "site_settings_insert_admin"
+  ON site_settings FOR INSERT TO authenticated
+  WITH CHECK (auth.email() = current_setting('app.admin_email', true));
+
+CREATE POLICY "site_settings_update_admin"
+  ON site_settings FOR UPDATE TO authenticated
+  USING (auth.email() = current_setting('app.admin_email', true))
+  WITH CHECK (auth.email() = current_setting('app.admin_email', true));
+
+-- Seed default values (safe to run multiple times)
+INSERT INTO site_settings (key, value) VALUES
+  ('site_title',       'كشف التسربات والعزل بالسعودية'),
+  ('site_description', 'شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في المملكة العربية السعودية'),
+  ('phone',            '+966500000000'),
+  ('whatsapp',         '966500000000'),
+  ('google_ads_id',    '')
+ON CONFLICT (key) DO NOTHING;
+

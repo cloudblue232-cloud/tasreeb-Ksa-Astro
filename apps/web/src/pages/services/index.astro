@@ -5,7 +5,9 @@ import { createClient as createStaticClient } from '../../lib/supabase'
 const supabase = createStaticClient()
 const { data: services } = await supabase.from('services').select('*').eq('published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: true })
 
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
 
 const icons: Record<string, string> = {

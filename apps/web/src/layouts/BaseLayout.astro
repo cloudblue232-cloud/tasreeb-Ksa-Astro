@@ -1,23 +1,29 @@
 ---
 import '../styles/global.css'
+import { getSettings } from '../lib/settings'
 
 interface Props {
-  title: string
+  title?: string
   description?: string
   image?: string
   canonical?: string
 }
 
-const SITE_URL = import.meta.env.PUBLIC_SITE_URL || 'https://example.com'
-const SITE_NAME = 'كشف التسربات والعزل بالسعودية'
+// Load live settings from Supabase (falls back to defaults if unavailable)
+const settings = await getSettings()
+
+const SITE_URL = import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+const SITE_NAME = settings.site_title
 
 const {
   title,
-  description = 'شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في المملكة العربية السعودية',
+  description = settings.site_description,
   image,
   canonical = Astro.url.href,
 } = Astro.props
-const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`
+
+const fullTitle = !title || title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`
+const googleAdsId = settings.google_ads_id?.trim()
 ---
 
 <!doctype html>
@@ -54,6 +60,19 @@ const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`
 
     <title>{fullTitle}</title>
     <slot name="head" />
+
+    <!-- Google Ads — injected automatically when google_ads_id is set in Site Settings -->
+    {googleAdsId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}></script>
+        <script define:vars={{ googleAdsId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', googleAdsId);
+        </script>
+      </>
+    )}
   </head>
   <body>
     <slot />

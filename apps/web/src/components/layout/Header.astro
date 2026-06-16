@@ -1,7 +1,11 @@
 ---
-const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const PHONE = settings.phone
+const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
+const siteTitle = settings.site_title.split(' ').slice(0, 2).join(' ') // First two words for short header
+const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ') // Rest of the words
 ---
 
 <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
@@ -12,7 +16,7 @@ const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحبا�
       <a href="/" class="flex items-center gap-2 flex-shrink-0">
         <span class="text-2xl">🔍</span>
         <span class="font-extrabold text-blue-900 text-sm sm:text-base leading-tight hidden sm:block">
-          كشف التسربات<br /><span class="text-blue-600 font-normal text-xs">والعزل بالسعودية</span>
+          {siteTitle}<br /><span class="text-blue-600 font-normal text-xs">{siteSubTitle}</span>
         </span>
       </a>
 

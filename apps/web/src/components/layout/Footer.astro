@@ -1,6 +1,7 @@
 ---
-const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const PHONE = settings.phone
 ---
 
 <footer class="bg-blue-950 text-white pt-14 pb-6 mt-auto">
@@ -11,10 +12,10 @@ const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
       <div class="lg:col-span-2">
         <div class="flex items-center gap-2 mb-4">
           <span class="text-3xl">🔍</span>
-          <span class="font-extrabold text-xl">كشف التسربات والعزل بالسعودية</span>
+          <span class="font-extrabold text-xl">{settings.site_title}</span>
         </div>
         <p class="text-blue-200 text-sm leading-relaxed max-w-xs">
-          شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في جميع أنحاء المملكة العربية السعودية.
+          {settings.site_description}
         </p>
         <div class="flex items-center gap-3 mt-5">
           <a href={`tel:${PHONE}`} class="text-blue-200 hover:text-white text-sm transition-colors">📞 {PHONE}</a>

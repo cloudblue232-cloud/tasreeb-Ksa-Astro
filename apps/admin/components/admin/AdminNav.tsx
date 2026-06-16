@@ -12,6 +12,7 @@ const navItems = [
   { href: '/admin', label: 'لوحة التحكم', icon: '📊', exact: true },
   { href: '/admin/articles', label: 'المقالات', icon: '📝', exact: false },
   { href: '/admin/services', label: 'الخدمات', icon: '🛠️', exact: false },
+  { href: '/admin/settings', label: 'إعدادات الموقع', icon: '⚙️', exact: false },
 ]
 
 export default function AdminNav({ userEmail }: AdminNavProps) {

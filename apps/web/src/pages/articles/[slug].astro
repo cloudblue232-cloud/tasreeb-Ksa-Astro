@@ -12,9 +12,11 @@ const [{ data: article }, { data: related }] = await Promise.all([
 
 if (!article) return Astro.redirect('/articles')
 
-const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
-const SITE_URL = import.meta.env.PUBLIC_SITE_URL || 'https://example.com'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const PHONE = settings.phone
+const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
+const SITE_URL = import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، قرأت مقالكم وأريد الاستفسار عن خدماتكم')}`
 
 const jsonLd = {

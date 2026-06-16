@@ -5,16 +5,18 @@ import ServicesPreview from '../components/home/ServicesPreview.astro'
 import CTASection from '../components/home/CTASection.astro'
 import LatestArticles from '../components/home/LatestArticles.astro'
 import { createClient as createStaticClient } from '../lib/supabase'
+import { getSettings } from '../lib/settings'
 
 const supabase = createStaticClient()
-const [{ data: services }, { data: articles }] = await Promise.all([
+const [{ data: services }, { data: articles }, settings] = await Promise.all([
   supabase.from('services').select('*').eq('published', true).order('sort_order', { ascending: true }).order('created_at', { ascending: true }),
   supabase.from('articles').select('*').eq('published', true).order('created_at', { ascending: false }).limit(4),
+  getSettings(),
 ])
 
-const SITE_NAME = 'كشف التسربات والعزل بالسعودية'
-const SITE_DESC = 'شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في المملكة العربية السعودية'
-const SITE_URL = import.meta.env.PUBLIC_SITE_URL || 'https://example.com'
+const SITE_NAME = settings.site_title
+const SITE_DESC = settings.site_description
+const SITE_URL = import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -22,7 +24,7 @@ const jsonLd = {
   name: SITE_NAME,
   description: SITE_DESC,
   url: SITE_URL,
-  telephone: import.meta.env.PUBLIC_PHONE,
+  telephone: settings.phone,
   areaServed: 'SA',
   address: { '@type': 'PostalAddress', addressCountry: 'SA', addressRegion: 'الرياض' },
   serviceType: ['كشف تسربات المياه', 'عزل الأسطح', 'عزل الخزانات'],

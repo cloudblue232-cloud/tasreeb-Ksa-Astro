@@ -1,6 +1,8 @@
 ---
-const PHONE = import.meta.env.PUBLIC_PHONE || '0500000000'
-const WHATSAPP = import.meta.env.PUBLIC_WHATSAPP || '966500000000'
+import { getSettings } from '../../lib/settings'
+const settings = await getSettings()
+const PHONE = settings.phone
+const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
 ---
 
@@ -31,7 +33,7 @@ const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحبا�
           لا تنتظر حتى تتفاقم المشكلة — تواصل معنا الآن للحصول على كشف مجاني
         </p>
         <div class="flex flex-wrap justify-center gap-4">
-          <a href={`tel:${PHONE}`} id="cta-call-btn" class="btn-primary !bg-white !text-blue-700 hover:!bg-blue-50">
+          <a href={`tel:${PHONE}`} id="cta-call-btn" class="btn-primary bg-white text-blue-700 hover:bg-blue-50">
             📞 اتصل مجاناً
           </a>
           <a href={waLink} id="cta-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
