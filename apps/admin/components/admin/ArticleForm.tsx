@@ -6,7 +6,7 @@ import { createClient } from '@saudi-leaks/shared/supabase/client'
 import { slugify } from '@saudi-leaks/shared/utils'
 import ImageUpload from './ImageUpload'
 import type { Article, ArticleInsert } from '@saudi-leaks/shared/types'
-import { revalidateAstroPaths } from '@/app/actions/revalidate'
+import { triggerRevalidation } from '@/lib/revalidate'
 
 interface ArticleFormProps {
   article?: Article
@@ -123,8 +123,8 @@ function insertTag(tag: string) {
     if (err) { setError(err.message); setLoading(false); return }
     setIsDirty(false)
 
-    // Trigger Vercel ISR Revalidation for public site
-    await revalidateAstroPaths(['/', '/articles', `/articles/${slug}`])
+    // Trigger Vercel ISR cache purge (fire-and-forget via API route)
+    triggerRevalidation(['/', '/articles', `/articles/${slug}`])
 
     router.push('/admin/articles')
     router.refresh()
