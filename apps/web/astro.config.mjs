@@ -7,10 +7,10 @@ export default defineConfig({
   output: 'server',
   adapter: vercel({
     isr: {
-      // Revalidate all pages every hour (like Next.js revalidate: 3600)
-      expiration: 3600,
-      // Allow on-demand purging from the Admin Dashboard
-      bypassToken: process.env.REVALIDATION_TOKEN,
+      // Pages are cached for 60 seconds, then automatically re-fetched from Supabase.
+      // After an admin update, the change will appear within 1 minute max.
+      // Visitors still get instant cached page loads during that window.
+      expiration: 60,
     },
   }),
   vite: {
