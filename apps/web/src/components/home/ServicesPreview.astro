@@ -30,10 +30,17 @@ const icons: Record<string, string> = {
             class="card-hover group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200 block">
             <div class="w-full h-44 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
               {service.image_url ? (
-                <img src={service.image_url} alt={service.title}
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img
+                  src={service.image_url}
+                  alt={service.title}
+                  width="600"
+                  height="350"
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               ) : (
-                <span class="text-7xl">{icons[service.slug] || '🔧'}</span>
+                <span class="text-7xl" aria-hidden="true">{icons[service.slug] || '🔧'}</span>
               )}
             </div>
             <div class="p-5">

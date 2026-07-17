@@ -11,37 +11,39 @@ const PHONE = settings.phone
       <!-- Brand -->
       <div class="lg:col-span-2">
         <div class="flex items-center gap-2 mb-4">
-          <span class="text-3xl">🔍</span>
+          <span class="text-3xl" aria-hidden="true">🔍</span>
           <span class="font-extrabold text-xl">{settings.site_title}</span>
         </div>
         <p class="text-blue-200 text-sm leading-relaxed max-w-xs">
           {settings.site_description}
         </p>
         <div class="flex items-center gap-3 mt-5">
-          <a href={`tel:${PHONE}`} class="text-blue-200 hover:text-white text-sm transition-colors">📞 {PHONE}</a>
+          <a href={`tel:${PHONE}`} class="text-blue-200 hover:text-white text-sm transition-colors">
+            <span aria-hidden="true">📞</span> {PHONE}
+          </a>
         </div>
       </div>
 
       <!-- Quick Links -->
-      <div>
+      <nav aria-label="روابط سريعة">
         <h3 class="font-bold text-white mb-4">روابط سريعة</h3>
         <ul class="space-y-2">
           {[['/', 'الرئيسية'], ['/services', 'خدماتنا'], ['/articles', 'المقالات']].map(([href, label]) => (
             <li><a href={href} class="text-blue-200 hover:text-white text-sm transition-colors">{label}</a></li>
           ))}
         </ul>
-      </div>
+      </nav>
 
-      <!-- Services -->
-      <div>
+      <!-- Services — now actual links for SEO internal linking -->
+      <nav aria-label="خدماتنا">
         <h3 class="font-bold text-white mb-4">خدماتنا</h3>
-        <ul class="space-y-2 text-blue-200 text-sm">
-          <li>كشف تسربات المياه</li>
-          <li>عزل الأسطح والجدران</li>
-          <li>عزل الخزانات والمسابح</li>
-          <li>كشف تسربات الغاز</li>
+        <ul class="space-y-2">
+          <li><a href="/services/kashf-tasaroubat-almaya" class="text-blue-200 hover:text-white text-sm transition-colors">كشف تسربات المياه</a></li>
+          <li><a href="/services/azl-alsotouh-waljedran" class="text-blue-200 hover:text-white text-sm transition-colors">عزل الأسطح والجدران</a></li>
+          <li><a href="/services/azl-alkhazanat-walmasabeh" class="text-blue-200 hover:text-white text-sm transition-colors">عزل الخزانات والمسابح</a></li>
+          <li><a href="/services/kashf-tasaroubat-algaz" class="text-blue-200 hover:text-white text-sm transition-colors">كشف تسربات الغاز</a></li>
         </ul>
-      </div>
+      </nav>
     </div>
 
     <div class="border-t border-blue-800 pt-6 text-center text-blue-300 text-xs">

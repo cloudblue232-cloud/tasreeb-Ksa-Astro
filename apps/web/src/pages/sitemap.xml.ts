@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro'
 import { createClient as createStaticClient } from '../lib/supabase'
 
 export const GET: APIRoute = async () => {
-  const SITE_URL = import.meta.env.PUBLIC_SITE_URL || 'https://example.com'
+  const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
   const supabase = createStaticClient()
 
   const [{ data: articles }, { data: services }] = await Promise.all([

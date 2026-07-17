@@ -92,3 +92,34 @@ body {
 /* Line clamp utilities */
 .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 .line-clamp-4 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
+
+/* ── Accessibility ─────────────────────────────────────────────────────── */
+
+/* Focus styles for keyboard navigation */
+:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Skip to main content link — hidden until focused by keyboard */
+.skip-to-content {
+  position: fixed;
+  top: -100%;
+  right: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #1e3a8a;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  z-index: 9999;
+  border-radius: 0 0 12px 12px;
+  text-decoration: none;
+  transition: top 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+.skip-to-content:focus {
+  top: 0;
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}

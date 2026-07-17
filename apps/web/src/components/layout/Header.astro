@@ -4,40 +4,114 @@ const settings = await getSettings()
 const PHONE = settings.phone
 const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
-const siteTitle = settings.site_title.split(' ').slice(0, 2).join(' ') // First two words for short header
-const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ') // Rest of the words
+const siteTitle = settings.site_title.split(' ').slice(0, 2).join(' ')
+const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ')
 ---
 
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+<a href="#main-content" class="skip-to-content">تخطى إلى المحتوى الرئيسي</a>
+
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 gap-4">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 flex-shrink-0">
-        <span class="text-2xl">🔍</span>
-        <span class="font-extrabold text-blue-900 text-sm sm:text-base leading-tight hidden sm:block">
+      <a href="/" aria-label={`${settings.site_title} — الصفحة الرئيسية`} class="flex items-center gap-2 flex-shrink-0">
+        <span class="text-2xl" aria-hidden="true">🔍</span>
+        <span class="font-extrabold text-blue-900 text-sm sm:text-base leading-tight">
           {siteTitle}<br /><span class="text-blue-600 font-normal text-xs">{siteSubTitle}</span>
         </span>
       </a>
 
-      <!-- Nav -->
-      <nav class="hidden md:flex items-center gap-6">
+      <!-- Desktop Nav -->
+      <nav aria-label="التنقل الرئيسي" class="hidden md:flex items-center gap-6">
         <a href="/" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">الرئيسية</a>
         <a href="/services" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">خدماتنا</a>
         <a href="/articles" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">المقالات</a>
       </nav>
 
-      <!-- CTA -->
+      <!-- CTA Buttons + Mobile Hamburger -->
       <div class="flex items-center gap-2">
         <a href={`tel:${PHONE}`} id="header-call-btn"
           class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-blue-700 border-2 border-blue-200 rounded-full hover:bg-blue-50 transition-colors">
-          📞 اتصل الآن
+          <span aria-hidden="true">📞</span> اتصل الآن
         </a>
         <a href={waLink} id="header-wa-btn" target="_blank" rel="noopener noreferrer"
+          aria-label="تواصل معنا عبر واتساب"
           class="btn-whatsapp !py-2 !px-4 !text-sm">
           واتساب
         </a>
+
+        <!-- Hamburger button — visible on mobile only -->
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="فتح القائمة"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          class="md:hidden flex flex-col gap-1.5 w-9 h-9 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <span id="menu-line-1" class="w-5 h-0.5 bg-gray-700 block transition-all duration-200"></span>
+          <span id="menu-line-2" class="w-5 h-0.5 bg-gray-700 block transition-all duration-200"></span>
+          <span id="menu-line-3" class="w-5 h-0.5 bg-gray-700 block transition-all duration-200"></span>
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Mobile Nav Panel -->
+  <div
+    id="mobile-nav"
+    class="md:hidden absolute top-full right-0 left-0 bg-white border-b border-gray-100 shadow-lg hidden"
+    aria-hidden="true"
+  >
+    <nav aria-label="القائمة الرئيسية للجوال" class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+      <a href="/" class="py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-xl transition-colors">الرئيسية</a>
+      <a href="/services" class="py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-xl transition-colors">خدماتنا</a>
+      <a href="/articles" class="py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-semibold rounded-xl transition-colors">المقالات</a>
+      <a href={`tel:${PHONE}`} class="py-3 px-4 text-blue-700 hover:bg-blue-50 font-bold rounded-xl transition-colors flex items-center gap-2">
+        <span aria-hidden="true">📞</span> اتصل بنا: {PHONE}
+      </a>
+    </nav>
+  </div>
 </header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn')
+  const nav = document.getElementById('mobile-nav')
+  const l1 = document.getElementById('menu-line-1')
+  const l2 = document.getElementById('menu-line-2')
+  const l3 = document.getElementById('menu-line-3')
+
+  btn?.addEventListener('click', () => {
+    const isOpen = !nav?.classList.contains('hidden')
+
+    nav?.classList.toggle('hidden', isOpen)
+    nav?.setAttribute('aria-hidden', String(isOpen))
+    btn.setAttribute('aria-expanded', String(!isOpen))
+    btn.setAttribute('aria-label', !isOpen ? 'إغلاق القائمة' : 'فتح القائمة')
+
+    // Animate hamburger → X
+    if (!isOpen) {
+      l1?.style.setProperty('transform', 'translateY(8px) rotate(45deg)')
+      l2?.style.setProperty('opacity', '0')
+      l3?.style.setProperty('transform', 'translateY(-8px) rotate(-45deg)')
+    } else {
+      l1?.style.removeProperty('transform')
+      l2?.style.removeProperty('opacity')
+      l3?.style.removeProperty('transform')
+    }
+  })
+
+  // Close mobile nav on link click
+  nav?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      nav.classList.add('hidden')
+      nav.setAttribute('aria-hidden', 'true')
+      btn?.setAttribute('aria-expanded', 'false')
+      btn?.setAttribute('aria-label', 'فتح القائمة')
+      l1?.style.removeProperty('transform')
+      l2?.style.removeProperty('opacity')
+      l3?.style.removeProperty('transform')
+    })
+  })
+</script>

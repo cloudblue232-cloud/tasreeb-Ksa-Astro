@@ -28,15 +28,24 @@ function truncate(str: string, n: number) {
             class="card-hover group block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200">
             <div class="h-40 bg-gradient-to-br from-blue-50 to-indigo-100 relative flex items-center justify-center">
               {article.image_url ? (
-                <img src={article.image_url} alt={article.title}
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img
+                  src={article.image_url}
+                  alt={article.title}
+                  width="400"
+                  height="250"
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               ) : (
-                <span class="text-5xl opacity-20">📰</span>
+                <span class="text-5xl opacity-20" aria-hidden="true">📰</span>
               )}
             </div>
             <div class="p-4">
               <p class="text-xs text-gray-400 mb-2">
-                {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
+                <time datetime={article.created_at}>
+                  {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
               </p>
               <h3 class="font-bold text-gray-900 text-sm leading-snug group-hover:text-blue-600 transition-colors mb-2">
                 {article.title}

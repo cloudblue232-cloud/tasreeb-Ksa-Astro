@@ -16,25 +16,37 @@ const [{ data: services }, { data: articles }, settings] = await Promise.all([
 
 const SITE_NAME = settings.site_title
 const SITE_DESC = settings.site_description
-const SITE_URL = import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
 
+// Enhanced LocalBusiness schema with all recommended fields
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: SITE_NAME,
   description: SITE_DESC,
   url: SITE_URL,
+  logo: `${SITE_URL}/og-default.png`,
+  image: `${SITE_URL}/og-default.png`,
   telephone: settings.phone,
-  areaServed: 'SA',
-  address: { '@type': 'PostalAddress', addressCountry: 'SA', addressRegion: 'الرياض' },
-  serviceType: ['كشف تسربات المياه', 'عزل الأسطح', 'عزل الخزانات'],
+  openingHours: 'Mo-Su 00:00-23:59',
+  priceRange: '$$',
+  areaServed: { '@type': 'Country', name: 'SA' },
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'SA',
+    addressRegion: 'الرياض',
+    addressLocality: 'الرياض',
+  },
+  serviceType: ['كشف تسربات المياه', 'عزل الأسطح', 'عزل الخزانات', 'كشف تسربات الغاز'],
 }
 ---
 
 <PublicLayout title={SITE_NAME} description={SITE_DESC}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
-  <HeroSection />
-  <ServicesPreview services={services ?? []} />
-  <CTASection />
-  <LatestArticles articles={articles ?? []} />
+  <div id="main-content">
+    <HeroSection />
+    <ServicesPreview services={services ?? []} />
+    <CTASection />
+    <LatestArticles articles={articles ?? []} />
+  </div>
 </PublicLayout>

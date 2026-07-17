@@ -16,18 +16,38 @@ import { getSettings } from '../../lib/settings'
 const settings = await getSettings()
 const PHONE = settings.phone
 const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
-const SITE_URL = import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com'
+const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، قرأت مقالكم وأريد الاستفسار عن خدماتكم')}`
+const canonicalUrl = `${SITE_URL}/articles/${slug}`
 
-const jsonLd = {
-  '@context': 'https://schema.org', '@type': 'Article',
+// Article JSON-LD with mainEntityOfPage and publisher logo
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
   headline: article.title,
   description: article.meta_description,
   datePublished: article.created_at,
   dateModified: article.updated_at,
-  author: { '@type': 'Organization', name: 'كشف التسربات والعزل بالسعودية' },
-  publisher: { '@type': 'Organization', name: 'كشف التسربات والعزل بالسعودية' },
-  ...(article.image_url ? { image: article.image_url } : {}),
+  author: { '@type': 'Organization', name: settings.site_title, url: SITE_URL },
+  publisher: {
+    '@type': 'Organization',
+    name: settings.site_title,
+    url: SITE_URL,
+    logo: { '@type': 'ImageObject', url: `${SITE_URL}/og-default.png` },
+  },
+  ...(article.image_url ? { image: { '@type': 'ImageObject', url: article.image_url } } : {}),
+}
+
+// BreadcrumbList JSON-LD
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: SITE_URL },
+    { '@type': 'ListItem', position: 2, name: 'المقالات', item: `${SITE_URL}/articles` },
+    { '@type': 'ListItem', position: 3, name: article.title, item: canonicalUrl },
+  ],
 }
 ---
 
@@ -35,73 +55,90 @@ const jsonLd = {
   title={article.meta_title || article.title}
   description={article.meta_description || undefined}
   image={article.image_url || undefined}
-  canonical={`${SITE_URL}/articles/${slug}`}
+  canonical={canonicalUrl}
+  ogType="article"
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbJsonLd)} />
 
-  <!-- Hero image -->
-  {article.image_url && (
-    <div class="relative w-full h-72 sm:h-96 overflow-hidden">
-      <img src={article.image_url} alt={article.title} class="w-full h-full object-cover" />
-      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-    </div>
-  )}
+  <div id="main-content">
+    <!-- Hero image — eager + high priority as it's the LCP element -->
+    {article.image_url && (
+      <div class="relative w-full h-72 sm:h-96 overflow-hidden">
+        <img
+          src={article.image_url}
+          alt={article.title}
+          width="1200"
+          height="630"
+          loading="eager"
+          fetchpriority="high"
+          decoding="sync"
+          class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      </div>
+    )}
 
-  <div class="bg-gray-50 min-h-screen">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8">
-        <a href="/" class="hover:text-blue-600 transition-colors">الرئيسية</a>
-        <span>/</span>
-        <a href="/articles" class="hover:text-blue-600 transition-colors">المقالات</a>
-        <span>/</span>
-        <span class="text-gray-800 font-medium truncate">{article.title}</span>
-      </nav>
+    <div class="bg-gray-50 min-h-screen">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Breadcrumb (visual) -->
+        <nav aria-label="مسار التنقل" class="flex items-center gap-2 text-sm text-gray-500 mb-8">
+          <a href="/" class="hover:text-blue-600 transition-colors">الرئيسية</a>
+          <span aria-hidden="true">/</span>
+          <a href="/articles" class="hover:text-blue-600 transition-colors">المقالات</a>
+          <span aria-hidden="true">/</span>
+          <span class="text-gray-800 font-medium truncate">{article.title}</span>
+        </nav>
 
-      <div class="grid lg:grid-cols-3 gap-10">
-        <!-- Article -->
-        <div class="lg:col-span-2">
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <p class="text-sm text-gray-400 mb-3">
-              {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-6">{article.title}</h1>
-            <div class="prose-arabic" set:html={article.content} />
-          </div>
+        <div class="grid lg:grid-cols-3 gap-10">
+          <!-- Article -->
+          <div class="lg:col-span-2">
+            <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <p class="text-sm text-gray-400 mb-3">
+                <time datetime={article.created_at}>
+                  {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
+              </p>
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-6">{article.title}</h1>
+              <div class="prose-arabic" set:html={article.content} />
+            </article>
 
-          <!-- Related -->
-          {related && related.length > 0 && (
-            <div class="mt-10">
-              <h2 class="text-xl font-bold text-gray-900 mb-5">مقالات ذات صلة</h2>
-              <div class="grid sm:grid-cols-2 gap-4">
-                {related.map(r => (
-                  <a href={`/articles/${r.slug}`}
-                    class="group block bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 shadow-sm transition-all">
-                    <p class="text-xs text-gray-400 mb-1">
-                      {new Date(r.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </p>
-                    <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">{r.title}</h3>
-                  </a>
-                ))}
+            <!-- Related articles -->
+            {related && related.length > 0 && (
+              <div class="mt-10">
+                <h2 class="text-xl font-bold text-gray-900 mb-5">مقالات ذات صلة</h2>
+                <div class="grid sm:grid-cols-2 gap-4">
+                  {related.map(r => (
+                    <a href={`/articles/${r.slug}`}
+                      class="group block bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 shadow-sm transition-all">
+                      <p class="text-xs text-gray-400 mb-1">
+                        <time datetime={r.created_at}>
+                          {new Date(r.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </time>
+                      </p>
+                      <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">{r.title}</h3>
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        <!-- Sidebar -->
-        <aside class="space-y-5">
-          <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center sticky top-24">
-            <div class="text-4xl mb-3">🛠️</div>
-            <h3 class="font-extrabold text-lg mb-2">احتاج إلى مساعدة؟</h3>
-            <p class="text-blue-100 text-sm mb-5 leading-relaxed">خبراؤنا جاهزون 24/7</p>
-            <a href={`tel:${PHONE}`} id="article-sidebar-call-btn" class="btn-primary w-full justify-center mb-3 !rounded-xl block text-center">اتصل الآن</a>
-            <a href={waLink} id="article-sidebar-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp w-full justify-center !rounded-xl block text-center">واتساب</a>
-          </div>
-          <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-            <h3 class="font-bold text-gray-900 mb-3">تصفح خدماتنا</h3>
-            <a href="/services" class="btn-primary w-full justify-center !text-sm block text-center">جميع الخدمات</a>
-          </div>
-        </aside>
+          <!-- Sidebar -->
+          <aside class="space-y-5">
+            <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center sticky top-24">
+              <div class="text-4xl mb-3" aria-hidden="true">🛠️</div>
+              <h3 class="font-extrabold text-lg mb-2">احتاج إلى مساعدة؟</h3>
+              <p class="text-blue-100 text-sm mb-5 leading-relaxed">خبراؤنا جاهزون 24/7</p>
+              <a href={`tel:${PHONE}`} id="article-sidebar-call-btn" class="btn-primary w-full justify-center mb-3 !rounded-xl block text-center">اتصل الآن</a>
+              <a href={waLink} id="article-sidebar-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp w-full justify-center !rounded-xl block text-center">واتساب</a>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+              <h3 class="font-bold text-gray-900 mb-3">تصفح خدماتنا</h3>
+              <a href="/services" class="btn-primary w-full justify-center !text-sm block text-center">جميع الخدمات</a>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   </div>
