@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@saudi-leaks/shared/supabase/client'
 import { slugify } from '@saudi-leaks/shared/utils'
 import ImageUpload from './ImageUpload'
+import MediaLibrary from './MediaLibrary'
 import type { Article, ArticleInsert } from '@saudi-leaks/shared/types'
 import { triggerRevalidation } from '@/lib/revalidate'
 
@@ -39,6 +40,7 @@ export default function ArticleForm({ article }: ArticleFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [isDirty, setIsDirty] = useState(false)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false)
 
   // Unsaved changes warning
   useEffect(() => {
@@ -96,6 +98,20 @@ function insertTag(tag: string) {
   }, 0)
 }
 
+  // Insert image tag at cursor position (called from MediaLibrary)
+  function handleMediaInsert(url: string, altText: string) {
+    const ta = textareaRef.current
+    const start = ta ? ta.selectionStart : content.length
+    const snippet = `\n<img src="${url}" alt="${altText}" loading="lazy" decoding="async" width="800" height="500" class="article-img" />\n`
+    setContent(prev => prev.slice(0, start) + snippet + prev.slice(start))
+    markDirty()
+    setTimeout(() => {
+      if (ta) {
+        ta.focus()
+        ta.setSelectionRange(start + snippet.length, start + snippet.length)
+      }
+    }, 0)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -206,6 +222,17 @@ function insertTag(tag: string) {
                   {action.label}
                 </button>
               ))}
+
+              {/* Open media library button */}
+              <button
+                type="button"
+                title="مكتبة الصور — إدراج صورة في المحتوى"
+                onClick={() => setShowMediaLibrary(true)}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-colors"
+              >
+                📷 صورة
+              </button>
+
               <span className="mr-auto text-xs text-gray-400 self-center">
                 {content.length} حرف
               </span>
@@ -216,7 +243,7 @@ function insertTag(tag: string) {
               placeholder={'<h2>عنوان فرعي</h2>\n<p>محتوى المقال...</p>'}
               className="w-full px-4 py-3 rounded-b-xl border border-t-0 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y leading-relaxed"
               dir="auto" />
-            <p className="text-xs text-gray-400 mt-1">يدعم: h2, h3, p, ul, li, strong — استخدم أزرار الأدوات أعلاه</p>
+            <p className="text-xs text-gray-400 mt-1">يدعم: h2, h3, p, ul, li, strong, img — استخدم أزرار الأدوات أعلاه، أو 📷 لإدراج صورة</p>
           </>
         ) : (
           <div
@@ -266,8 +293,16 @@ function insertTag(tag: string) {
           className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition-colors">
           إلغاء
         </button>
-        {isDirty && <span className="text-xs text-amber-600 font-medium">● تغييرات غير محفوظة</span>}
+      {isDirty && <span className="text-xs text-amber-600 font-medium">● تغييرات غير محفوظة</span>}
       </div>
+
+      {/* Media Library modal */}
+      {showMediaLibrary && (
+        <MediaLibrary
+          onInsert={handleMediaInsert}
+          onClose={() => setShowMediaLibrary(false)}
+        />
+      )}
     </form>
   )
 }

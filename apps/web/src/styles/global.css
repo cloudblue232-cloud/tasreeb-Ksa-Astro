@@ -88,6 +88,16 @@ body {
 .prose-arabic ul { list-style: disc; padding-right: 1.5rem; margin-bottom: 1.25rem; }
 .prose-arabic li { margin-bottom: 0.4rem; }
 .prose-arabic strong { color: #1e3a8a; font-weight: 700; }
+.prose-arabic img,
+.prose-arabic .article-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 1.75rem auto;
+  display: block;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
 
 /* Line clamp utilities */
 .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
