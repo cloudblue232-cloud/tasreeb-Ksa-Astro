@@ -103,6 +103,27 @@ body {
 .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 .line-clamp-4 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
 
+/* ── Smooth scroll for TOC anchor links ─────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* Offset scroll target so heading isn't hidden behind sticky header */
+[id^="section-"] {
+  scroll-margin-top: 5rem;
+}
+
+/* ── FAQ details/summary styles ─────────────────────────────────────── */
+details summary::-webkit-details-marker,
+details summary::marker {
+  display: none;
+}
+details[open] > div {
+  animation: faq-open 0.25s ease;
+}
+@keyframes faq-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Accessibility ─────────────────────────────────────────────────────── */
 
 /* Focus styles for keyboard navigation */

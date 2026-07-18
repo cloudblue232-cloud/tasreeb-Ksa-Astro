@@ -10,7 +10,11 @@ const [{ data: article }, { data: related }] = await Promise.all([
   supabase.from('articles').select('id, title, slug, created_at').neq('slug', slug).order('created_at', { ascending: false }).limit(4),
 ])
 
-if (!article) return Astro.redirect('/articles')
+// Return proper 404 instead of redirect — tells Google "this page doesn't exist"
+if (!article) {
+  Astro.response.status = 404
+  Astro.response.statusText = 'Not Found'
+}
 
 import { getSettings } from '../../lib/settings'
 const settings = await getSettings()
@@ -20,15 +24,53 @@ const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، قرأت مقالكم وأريد الاستفسار عن خدماتكم')}`
 const canonicalUrl = `${SITE_URL}/articles/${slug}`
 
-// Article JSON-LD with mainEntityOfPage and publisher logo
-const articleJsonLd = {
+// ── Helper: strip HTML for plain text ──
+function stripHtml(html: string) {
+  return html.replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
+// ── Auto meta description: use manual if set, otherwise extract from content ──
+const autoDescription = article
+  ? (article.meta_description || stripHtml(article.content).slice(0, 160))
+  : undefined
+
+// ── Reading time: ~200 words/min for Arabic ──
+const wordCount = article ? stripHtml(article.content).split(/\s+/).filter(Boolean).length : 0
+const readingTime = Math.max(1, Math.ceil(wordCount / 200))
+
+// ── Table of Contents: extract H2/H3 headings from content ──
+interface TocItem { id: string; text: string; level: number }
+const tocItems: TocItem[] = []
+let contentWithIds = article?.content ?? ''
+
+if (article) {
+  const headingRegex = /<(h[23])[^>]*>(.*?)<\/\1>/gi
+  let match
+  let index = 0
+  while ((match = headingRegex.exec(article.content)) !== null) {
+    const level = parseInt(match[1][1])
+    const text = match[2].replace(/<[^>]*>/g, '').trim()
+    const id = `section-${index}`
+    tocItems.push({ id, text, level })
+    // Inject id attribute into the heading tag
+    contentWithIds = contentWithIds.replace(
+      match[0],
+      `<${match[1]} id="${id}">${match[2]}</${match[1]}>`
+    )
+    index++
+  }
+}
+
+// ── JSON-LD: Article schema ──
+const articleJsonLd = article ? {
   '@context': 'https://schema.org',
   '@type': 'Article',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
   headline: article.title,
-  description: article.meta_description,
+  description: autoDescription,
   datePublished: article.created_at,
   dateModified: article.updated_at,
+  wordCount: wordCount,
   author: { '@type': 'Organization', name: settings.site_title, url: SITE_URL },
   publisher: {
     '@type': 'Organization',
@@ -37,10 +79,10 @@ const articleJsonLd = {
     logo: { '@type': 'ImageObject', url: `${SITE_URL}/og-default.png` },
   },
   ...(article.image_url ? { image: { '@type': 'ImageObject', url: article.image_url } } : {}),
-}
+} : null
 
-// BreadcrumbList JSON-LD
-const breadcrumbJsonLd = {
+// ── JSON-LD: BreadcrumbList ──
+const breadcrumbJsonLd = article ? {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
@@ -48,98 +90,134 @@ const breadcrumbJsonLd = {
     { '@type': 'ListItem', position: 2, name: 'المقالات', item: `${SITE_URL}/articles` },
     { '@type': 'ListItem', position: 3, name: article.title, item: canonicalUrl },
   ],
-}
+} : null
 ---
 
 <PublicLayout
-  title={article.meta_title || article.title}
-  description={article.meta_description || undefined}
-  image={article.image_url || undefined}
+  title={article ? (article.meta_title || article.title) : 'المقال غير موجود'}
+  description={autoDescription}
+  image={article?.image_url || undefined}
   canonical={canonicalUrl}
   ogType="article"
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleJsonLd)} />
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  {articleJsonLd && <script type="application/ld+json" slot="head" set:html={JSON.stringify(articleJsonLd)} />}
+  {breadcrumbJsonLd && <script type="application/ld+json" slot="head" set:html={JSON.stringify(breadcrumbJsonLd)} />}
 
   <div id="main-content">
-    <!-- Hero image — eager + high priority as it's the LCP element -->
-    {article.image_url && (
-      <div class="relative w-full h-72 sm:h-96 overflow-hidden">
-        <img
-          src={article.image_url}
-          alt={article.title}
-          width="1200"
-          height="630"
-          loading="eager"
-          fetchpriority="high"
-          decoding="sync"
-          class="w-full h-full object-cover"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+    {!article ? (
+      <!-- 404 Page -->
+      <div class="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-20">
+        <span class="text-8xl mb-6" aria-hidden="true">📄</span>
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-3">المقال غير موجود</h1>
+        <p class="text-gray-500 mb-8 max-w-md">عذراً، لم نتمكن من العثور على المقال المطلوب. ربما تم حذفه أو تغيير رابطه.</p>
+        <a href="/articles" class="btn-primary">تصفح جميع المقالات</a>
       </div>
-    )}
-
-    <div class="bg-gray-50 min-h-screen">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <!-- Breadcrumb (visual) -->
-        <nav aria-label="مسار التنقل" class="flex items-center gap-2 text-sm text-gray-500 mb-8">
-          <a href="/" class="hover:text-blue-600 transition-colors">الرئيسية</a>
-          <span aria-hidden="true">/</span>
-          <a href="/articles" class="hover:text-blue-600 transition-colors">المقالات</a>
-          <span aria-hidden="true">/</span>
-          <span class="text-gray-800 font-medium truncate">{article.title}</span>
-        </nav>
-
-        <div class="grid lg:grid-cols-3 gap-10">
-          <!-- Article -->
-          <div class="lg:col-span-2">
-            <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-              <p class="text-sm text-gray-400 mb-3">
-                <time datetime={article.created_at}>
-                  {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </time>
-              </p>
-              <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-6">{article.title}</h1>
-              <div class="prose-arabic" set:html={article.content} />
-            </article>
-
-            <!-- Related articles -->
-            {related && related.length > 0 && (
-              <div class="mt-10">
-                <h2 class="text-xl font-bold text-gray-900 mb-5">مقالات ذات صلة</h2>
-                <div class="grid sm:grid-cols-2 gap-4">
-                  {related.map(r => (
-                    <a href={`/articles/${r.slug}`}
-                      class="group block bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 shadow-sm transition-all">
-                      <p class="text-xs text-gray-400 mb-1">
-                        <time datetime={r.created_at}>
-                          {new Date(r.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
-                        </time>
-                      </p>
-                      <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">{r.title}</h3>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
+    ) : (
+      <>
+        <!-- Hero image — eager + high priority as it's the LCP element -->
+        {article.image_url && (
+          <div class="relative w-full h-72 sm:h-96 overflow-hidden">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              width="1200"
+              height="630"
+              loading="eager"
+              fetchpriority="high"
+              decoding="sync"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
+        )}
 
-          <!-- Sidebar -->
-          <aside class="space-y-5">
-            <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center sticky top-24">
-              <div class="text-4xl mb-3" aria-hidden="true">🛠️</div>
-              <h3 class="font-extrabold text-lg mb-2">احتاج إلى مساعدة؟</h3>
-              <p class="text-blue-100 text-sm mb-5 leading-relaxed">خبراؤنا جاهزون 24/7</p>
-              <a href={`tel:${PHONE}`} id="article-sidebar-call-btn" class="btn-primary w-full justify-center mb-3 !rounded-xl block text-center">اتصل الآن</a>
-              <a href={waLink} id="article-sidebar-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp w-full justify-center !rounded-xl block text-center">واتساب</a>
+        <div class="bg-gray-50 min-h-screen">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Breadcrumb (visual) -->
+            <nav aria-label="مسار التنقل" class="flex items-center gap-2 text-sm text-gray-500 mb-8">
+              <a href="/" class="hover:text-blue-600 transition-colors">الرئيسية</a>
+              <span aria-hidden="true">/</span>
+              <a href="/articles" class="hover:text-blue-600 transition-colors">المقالات</a>
+              <span aria-hidden="true">/</span>
+              <span class="text-gray-800 font-medium truncate">{article.title}</span>
+            </nav>
+
+            <div class="grid lg:grid-cols-3 gap-10">
+              <!-- Article -->
+              <div class="lg:col-span-2">
+                <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                  <!-- Date + Reading time badge -->
+                  <div class="flex items-center gap-3 text-sm text-gray-400 mb-3">
+                    <time datetime={article.created_at}>
+                      {new Date(article.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    </time>
+                    <span class="w-1 h-1 bg-gray-300 rounded-full" aria-hidden="true"></span>
+                    <span>📖 قراءة {readingTime} {readingTime === 1 ? 'دقيقة' : 'دقائق'}</span>
+                  </div>
+
+                  <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-6">{article.title}</h1>
+
+                  <!-- Table of Contents -->
+                  {tocItems.length >= 3 && (
+                    <nav aria-label="فهرس المحتوى" class="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-8">
+                      <h2 class="font-bold text-blue-900 mb-3 text-sm">📑 فهرس المحتوى</h2>
+                      <ul class="space-y-1.5">
+                        {tocItems.map(item => (
+                          <li class={item.level === 3 ? 'pr-4' : ''}>
+                            <a
+                              href={`#${item.id}`}
+                              class="text-blue-700 hover:text-blue-900 text-sm transition-colors hover:underline"
+                            >
+                              {item.level === 2 ? '●' : '○'} {item.text}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </nav>
+                  )}
+
+                  <div class="prose-arabic" set:html={contentWithIds} />
+                </article>
+
+                <!-- Related articles -->
+                {related && related.length > 0 && (
+                  <div class="mt-10">
+                    <h2 class="text-xl font-bold text-gray-900 mb-5">مقالات ذات صلة</h2>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      {related.map(r => (
+                        <a href={`/articles/${r.slug}`}
+                          class="group block bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 shadow-sm transition-all">
+                          <p class="text-xs text-gray-400 mb-1">
+                            <time datetime={r.created_at}>
+                              {new Date(r.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' })}
+                            </time>
+                          </p>
+                          <h3 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors text-sm leading-snug">{r.title}</h3>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <!-- Sidebar -->
+              <aside class="space-y-5">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-900 rounded-2xl p-6 text-white text-center sticky top-24">
+                  <div class="text-4xl mb-3" aria-hidden="true">🛠️</div>
+                  <h3 class="font-extrabold text-lg mb-2">احتاج إلى مساعدة؟</h3>
+                  <p class="text-blue-100 text-sm mb-5 leading-relaxed">خبراؤنا جاهزون 24/7</p>
+                  <a href={`tel:${PHONE}`} id="article-sidebar-call-btn" class="btn-primary w-full justify-center mb-3 !rounded-xl block text-center">اتصل الآن</a>
+                  <a href={waLink} id="article-sidebar-wa-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp w-full justify-center !rounded-xl block text-center">واتساب</a>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                  <h3 class="font-bold text-gray-900 mb-3">تصفح خدماتنا</h3>
+                  <a href="/services" class="btn-primary w-full justify-center !text-sm block text-center">جميع الخدمات</a>
+                </div>
+              </aside>
             </div>
-            <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-              <h3 class="font-bold text-gray-900 mb-3">تصفح خدماتنا</h3>
-              <a href="/services" class="btn-primary w-full justify-center !text-sm block text-center">جميع الخدمات</a>
-            </div>
-          </aside>
+          </div>
         </div>
-      </div>
-    </div>
+      </>
+    )}
   </div>
 </PublicLayout>

@@ -11,7 +11,18 @@ const [{ data: articles }, settings] = await Promise.all([
 
 const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
 
-function stripHtml(html: string) { return html.replace(/<[^>]*>/g, '') }
+function stripHtml(html: string) {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 function truncate(s: string, n: number) { return s.length > n ? s.slice(0, n) + '...' : s }
 
 // ItemList JSON-LD for the articles listing page
