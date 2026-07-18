@@ -32,8 +32,8 @@ const icons: Record<string, string> = {
   'moualajat-alrotuba-wa-izalat-alaofoun': '💧', 'syanat-wa-islah-tasaroubat-alsibaka': '🔧',
 }
 
-// ── FAQ data per service (these appear as rich results in Google) ──
-const faqsBySlug: Record<string, { q: string; a: string }[]> = {
+// ── FAQ data: prefer DB values, fallback to hardcoded defaults ──
+const hardcodedFaqs: Record<string, { q: string; a: string }[]> = {
   'kashf-tasaroubat-almaya': [
     { q: 'كيف أعرف أن هناك تسرب مياه في منزلي؟', a: 'من أبرز العلامات: ارتفاع غير مبرر في فاتورة المياه، ظهور بقع رطبة أو تغير لون الجدران والأرضيات، سماع صوت مياه جارية عند إغلاق جميع الحنفيات، وظهور روائح كريهة من العفن والرطوبة.' },
     { q: 'هل كشف التسربات يحتاج تكسير؟', a: 'لا، نستخدم أجهزة إلكترونية حديثة للكشف عن التسربات بدون أي تكسير. تشمل أجهزة الضغط، الكاميرات الحرارية، وأجهزة الموجات الصوتية التي تحدد مكان التسرب بدقة عالية.' },
@@ -57,7 +57,10 @@ const faqsBySlug: Record<string, { q: string; a: string }[]> = {
   ],
 }
 
-const faqs = service ? (faqsBySlug[service.slug] ?? []) : []
+// DB FAQs take priority → fallback to hardcoded → fallback to empty
+const faqs = service
+  ? (service.faqs && service.faqs.length > 0 ? service.faqs : hardcodedFaqs[service.slug] ?? [])
+  : []
 
 // ── JSON-LD: BreadcrumbList ──
 const breadcrumbJsonLd = service ? {

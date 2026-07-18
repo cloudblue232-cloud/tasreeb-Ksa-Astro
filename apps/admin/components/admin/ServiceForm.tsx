@@ -26,6 +26,7 @@ export default function ServiceForm({ service }: ServiceFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDirty, setIsDirty] = useState(false)
+  const [faqs, setFaqs] = useState<{ q: string; a: string }[]>(service?.faqs ?? [])
 
   // Track unsaved changes
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function ServiceForm({ service }: ServiceFormProps) {
       image_url: imageUrl || null,
       sort_order: sortOrder,
       published,
+      faqs: faqs.length > 0 ? faqs : null,
     }
 
     let err
@@ -163,6 +165,68 @@ export default function ServiceForm({ service }: ServiceFormProps) {
             className="w-full px-4 py-2.5 rounded-xl border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none" />
           <p className="text-xs text-gray-400 mt-1">{metaDescription.length}/170</p>
         </div>
+      </div>
+
+      {/* FAQ Editor */}
+      <div className="bg-green-50 rounded-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-green-900">❓ الأسئلة الشائعة (FAQ)</h3>
+            <p className="text-xs text-green-600 mt-0.5">تظهر في صفحة الخدمة وفي نتائج البحث كـ Rich Results</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setFaqs(prev => [...prev, { q: '', a: '' }]); markDirty() }}
+            className="px-4 py-2 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
+          >
+            + إضافة سؤال
+          </button>
+        </div>
+
+        {faqs.length === 0 ? (
+          <p className="text-sm text-green-600/70 text-center py-4">لا توجد أسئلة بعد — أضف أسئلة شائعة لتحسين ظهورك في جوجل</p>
+        ) : (
+          <div className="space-y-4">
+            {faqs.map((faq, i) => (
+              <div key={i} className="bg-white rounded-xl border border-green-200 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded-lg flex-shrink-0">سؤال {i + 1}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setFaqs(prev => prev.filter((_, idx) => idx !== i)); markDirty() }}
+                    className="text-red-400 hover:text-red-600 text-xs font-bold transition-colors"
+                  >
+                    🗑️ حذف
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={faq.q}
+                  onChange={e => {
+                    const updated = [...faqs]
+                    updated[i] = { ...updated[i], q: e.target.value }
+                    setFaqs(updated)
+                    markDirty()
+                  }}
+                  placeholder="مثال: كيف أعرف أن هناك تسرب مياه في منزلي؟"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm font-bold"
+                />
+                <textarea
+                  value={faq.a}
+                  onChange={e => {
+                    const updated = [...faqs]
+                    updated[i] = { ...updated[i], a: e.target.value }
+                    setFaqs(updated)
+                    markDirty()
+                  }}
+                  placeholder="الإجابة التفصيلية..."
+                  rows={3}
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm resize-y"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Actions */}

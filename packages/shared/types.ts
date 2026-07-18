@@ -20,6 +20,7 @@ export type Service = {
   image_url: string | null
   sort_order: number
   published: boolean
+  faqs: { q: string; a: string }[] | null
   created_at: string
   updated_at: string
 }
