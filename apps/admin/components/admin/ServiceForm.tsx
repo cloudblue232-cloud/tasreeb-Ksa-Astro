@@ -1,12 +1,24 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@saudi-leaks/shared/supabase/client'
 import { slugify } from '@saudi-leaks/shared/utils'
 import ImageUpload from './ImageUpload'
+import MediaLibrary from './MediaLibrary'
 import type { Service, ServiceInsert } from '@saudi-leaks/shared/types'
 import { triggerRevalidation } from '@/lib/revalidate'
+
+// Simple rich-text toolbar actions (same as the article editor)
+const TOOLBAR_ACTIONS = [
+  { label: 'H1', tag: 'h1', title: 'عنوان رئيسي كبير' },
+  { label: 'H2', tag: 'h2', title: 'عنوان رئيسي' },
+  { label: 'H3', tag: 'h3', title: 'عنوان فرعي' },
+  { label: 'P', tag: 'p', title: 'فقرة' },
+  { label: 'B', tag: 'strong', title: 'عريض' },
+  { label: 'UL', tag: 'ul-li', title: 'قائمة' },
+  { label: 'Link', tag: 'a', title: 'رابط (مع عنوان)' },
+]
 
 interface ServiceFormProps {
   service?: Service
@@ -15,6 +27,7 @@ interface ServiceFormProps {
 export default function ServiceForm({ service }: ServiceFormProps) {
   const isEdit = !!service
   const router = useRouter()
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [title, setTitle] = useState(service?.title ?? '')
   const [slug, setSlug] = useState(service?.slug ?? '')
@@ -27,6 +40,8 @@ export default function ServiceForm({ service }: ServiceFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [isDirty, setIsDirty] = useState(false)
   const [faqs, setFaqs] = useState<{ q: string; a: string }[]>(service?.faqs ?? [])
+  const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false)
 
   // Track unsaved changes
   useEffect(() => {
@@ -42,6 +57,50 @@ export default function ServiceForm({ service }: ServiceFormProps) {
   function handleTitleChange(val: string) {
     setTitle(val); markDirty()
     if (!isEdit) setSlug(slugify(val))
+  }
+
+  // Insert HTML tag wrapper at cursor position in the description textarea
+  function insertTag(tag: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const selected = description.slice(start, end)
+
+    let snippet = ''
+    if (tag === 'a') {
+      const url = prompt('أدخل الرابط', 'https://')
+      if (!url) return
+      snippet = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline" >${selected || 'رابط'}</a>`
+    } else if (tag === 'ul-li') {
+      snippet = `<ul>\n  <li>${selected || 'عنصر القائمة'}</li>\n</ul>`
+    } else {
+      snippet = `<${tag}>${selected || `نص ${tag}`}</${tag}>`
+    }
+
+    setDescription(description.slice(0, start) + snippet + description.slice(end))
+    markDirty()
+
+    setTimeout(() => {
+      ta.focus()
+      ta.setSelectionRange(start + snippet.length, start + snippet.length)
+    }, 0)
+  }
+
+  // Insert image tag at cursor position (called from MediaLibrary)
+  function handleMediaInsert(url: string, altText: string) {
+    const ta = textareaRef.current
+    const start = ta ? ta.selectionStart : description.length
+    const snippet = `\n<img src="${url}" alt="${altText}" loading="lazy" decoding="async" width="800" height="500" class="article-img" />\n`
+    setDescription(prev => prev.slice(0, start) + snippet + prev.slice(start))
+    markDirty()
+    setTimeout(() => {
+      if (ta) {
+        ta.focus()
+        ta.setSelectionRange(start + snippet.length, start + snippet.length)
+      }
+    }, 0)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -141,15 +200,61 @@ export default function ServiceForm({ service }: ServiceFormProps) {
         </div>
       </div>
 
-      {/* Description */}
+      {/* Description — rich-text editor */}
       <div>
-        <label htmlFor="service-desc" className="block text-sm font-bold text-gray-700 mb-2">
-          وصف الخدمة <span className="text-red-500">*</span>
-        </label>
-        <textarea id="service-desc" value={description}
-          onChange={e => { setDescription(e.target.value); markDirty() }}
-          required rows={6} placeholder="أدخل وصفاً تفصيلياً للخدمة..."
-          className={`${inputCls} resize-y leading-relaxed`} />
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="service-desc" className="text-sm font-bold text-gray-700">
+            وصف الخدمة <span className="text-red-500">*</span>
+          </label>
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs">
+            <button type="button" onClick={() => setActiveTab('edit')}
+              className={`px-3 py-1.5 font-semibold transition-colors ${activeTab === 'edit' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+              ✏️ تحرير
+            </button>
+            <button type="button" onClick={() => setActiveTab('preview')}
+              className={`px-3 py-1.5 font-semibold transition-colors ${activeTab === 'preview' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+              👁️ معاينة
+            </button>
+          </div>
+        </div>
+
+        {activeTab === 'edit' ? (
+          <>
+            {/* Toolbar */}
+            <div className="flex flex-wrap gap-2 mb-2 p-2 bg-gray-50 border border-gray-200 rounded-t-xl">
+              {TOOLBAR_ACTIONS.map(action => (
+                <button key={action.tag} type="button" title={action.title}
+                  onClick={() => insertTag(action.tag)}
+                  className="px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors">
+                  {action.label}
+                </button>
+              ))}
+              <button type="button" title="مكتبة الصور — إدراج صورة في المحتوى"
+                onClick={() => setShowMediaLibrary(true)}
+                className="px-3 py-1.5 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 hover:text-green-700 transition-colors">
+                📷 صورة
+              </button>
+              <span className="mr-auto text-xs text-gray-400 self-center">{description.length} حرف</span>
+            </div>
+            <textarea ref={textareaRef} id="service-desc" value={description}
+              onChange={e => { setDescription(e.target.value); markDirty() }}
+              required rows={12}
+              placeholder={'<p>أدخل وصفاً تفصيلياً للخدمة...</p>\n<h3>عنوان فرعي</h3>'}
+              className="w-full px-4 py-3 rounded-b-xl border border-t-0 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-y leading-relaxed"
+              dir="auto" />
+            <p className="text-xs text-gray-400 mt-1">يدعم: h1, h2, h3, p, ul, li, strong, img — النص العادي بدون وسوم يظهر كما هو في فقرات</p>
+          </>
+        ) : (
+          <div
+            className="prose-arabic min-h-48 bg-white border border-gray-200 rounded-xl p-6"
+            dir="rtl"
+            dangerouslySetInnerHTML={{ __html: /<\/?[a-z][\s\S]*>/i.test(description)
+              ? description
+              : description.trim()
+                ? description.split(/\n{2,}/).map(p => `<p>${p.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br />')}</p>`).join('')
+                : '<p class="text-gray-400">لا يوجد محتوى للمعاينة بعد...</p>' }}
+          />
+        )}
       </div>
 
       {/* SEO */}
@@ -249,6 +354,14 @@ export default function ServiceForm({ service }: ServiceFormProps) {
         </button>
         {isDirty && <span className="text-xs text-amber-600 font-medium">● تغييرات غير محفوظة</span>}
       </div>
+
+      {/* Media Library modal */}
+      {showMediaLibrary && (
+        <MediaLibrary
+          onInsert={handleMediaInsert}
+          onClose={() => setShowMediaLibrary(false)}
+        />
+      )}
     </form>
   )
 }
