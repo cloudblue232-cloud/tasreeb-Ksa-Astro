@@ -10,10 +10,10 @@ const PHONE = settings.phone
 
       <!-- Brand -->
       <div class="lg:col-span-2">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="text-3xl" aria-hidden="true">🔍</span>
-          <span class="font-extrabold text-xl">{settings.site_title}</span>
-        </div>
+        <a href="/" class="inline-block mb-4" aria-label={`${settings.site_title} — الصفحة الرئيسية`}>
+          <img src="/logo.png" alt={settings.site_title} width="640" height="414" class="h-24 w-auto" loading="lazy" />
+        </a>
+
         <p class="text-blue-200 text-sm leading-relaxed max-w-xs">
           {settings.site_description}
         </p>
