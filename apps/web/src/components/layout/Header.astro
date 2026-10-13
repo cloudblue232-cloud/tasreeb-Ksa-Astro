@@ -1,6 +1,25 @@
 ---
 import { getSettings } from '../../lib/settings'
-const settings = await getSettings()
+import { createClient } from '../../lib/supabase'
+import { serviceIcon } from '../../lib/serviceIcons'
+
+type NavService = { title: string; slug: string; image_url: string | null }
+
+async function getNavServices(): Promise<NavService[]> {
+  try {
+    const { data } = await createClient()
+      .from('services')
+      .select('title, slug, image_url')
+      .eq('published', true)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true })
+    return data ?? []
+  } catch {
+    return []
+  }
+}
+
+const [settings, navServices] = await Promise.all([getSettings(), getNavServices()])
 const PHONE = settings.phone
 const WHATSAPP = settings.whatsapp.replace(/\D/g, '')
 const waLink = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('مرحباً، أريد الاستفسار عن خدماتكم')}`
@@ -25,8 +44,43 @@ const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ')
       <!-- Desktop Nav -->
       <nav aria-label="التنقل الرئيسي" class="hidden md:flex items-center gap-6">
         <a href="/" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">الرئيسية</a>
-        <a href="/services" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">خدماتنا</a>
+        <!-- Services dropdown -->
+        <div class="nav-dd" id="services-dd">
+          <a href="/services" id="services-dd-trigger" class="nav-dd-trigger text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors" aria-haspopup="true" aria-controls="services-dd-panel">
+            خدماتنا
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="nav-dd-chevron w-3.5 h-3.5" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+          </a>
+          {navServices.length > 0 && (
+            <div class="nav-dd-panel" id="services-dd-panel">
+              <div class="nav-dd-card">
+                <div class="nav-dd-head">
+                  <span class="text-xs font-extrabold text-blue-600">خدماتنا</span>
+                  <span class="text-xs text-gray-400">{navServices.length} خدمات</span>
+                </div>
+                <ul class="nav-dd-grid">
+                  {navServices.map(s => (
+                    <li>
+                      <a href={`/services/${s.slug}`} class="nav-dd-item">
+                        <span class="nav-dd-thumb" aria-hidden="true">
+                          {s.image_url
+                            ? <img src={s.image_url} alt="" width="40" height="40" loading="lazy" decoding="async" />
+                            : serviceIcon(s.slug)}
+                        </span>
+                        <span class="nav-dd-title">{s.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <a href="/services" class="nav-dd-all">
+                  عرض جميع الخدمات
+                  <span aria-hidden="true">←</span>
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
         <a href="/articles" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">المقالات</a>
+        <a href="/contact" class="text-gray-700 hover:text-blue-600 font-semibold text-sm transition-colors">تواصل معنا</a>
       </nav>
 
       <!-- CTA Buttons + Mobile Hamburger -->
@@ -65,10 +119,41 @@ const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ')
     aria-hidden="true"
   >
     <div class="mobile-nav-inner">
-      <nav aria-label="القائمة الرئيسية للجوال" class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1 border-b border-gray-100 bg-white shadow-xl">
+      <nav aria-label="القائمة الرئيسية للجوال" class="mobile-nav-scroll max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1 border-b border-gray-100 bg-white shadow-xl">
         <a href="/" class="nav-link-mobile">الرئيسية</a>
-        <a href="/services" class="nav-link-mobile">خدماتنا</a>
+        {navServices.length > 0 ? (
+          <div class="nav-link-mobile nav-group-mobile">
+            <div class="flex items-center">
+              <a href="/services" class="flex-1 py-3 px-4">خدماتنا</a>
+              <button
+                type="button"
+                id="mobile-services-toggle"
+                class="mobile-sub-toggle"
+                aria-expanded="false"
+                aria-controls="mobile-services-list"
+                aria-label="عرض قائمة الخدمات"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+              </button>
+            </div>
+            <div id="mobile-services-list" class="mobile-sub">
+              <ul class="mobile-sub-inner">
+                {navServices.map(s => (
+                  <li>
+                    <a href={`/services/${s.slug}`} class="mobile-sub-link">
+                      <span class="text-base" aria-hidden="true">{serviceIcon(s.slug)}</span>
+                      {s.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <a href="/services" class="nav-link-mobile">خدماتنا</a>
+        )}
         <a href="/articles" class="nav-link-mobile">المقالات</a>
+        <a href="/contact" class="nav-link-mobile">تواصل معنا</a>
         <a href={`tel:${PHONE}`} class="nav-link-mobile text-blue-700 font-bold">
           <span aria-hidden="true">📞</span> اتصل بنا: {PHONE}
         </a>
@@ -126,10 +211,174 @@ const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ')
   .mobile-nav-panel.open .nav-link-mobile:nth-child(2) { transition-delay: 0.1s; }
   .mobile-nav-panel.open .nav-link-mobile:nth-child(3) { transition-delay: 0.15s; }
   .mobile-nav-panel.open .nav-link-mobile:nth-child(4) { transition-delay: 0.2s; }
+  .mobile-nav-panel.open .nav-link-mobile:nth-child(5) { transition-delay: 0.25s; }
 
   .nav-link-mobile:hover {
     background-color: #eff6ff;
     color: #2563eb;
+  }
+
+  /* ── Mobile: collapsible services group ──────────────────────── */
+  .mobile-nav-scroll {
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .nav-group-mobile {
+    display: block;
+    padding: 0;
+  }
+  .nav-group-mobile:hover { background-color: transparent; color: inherit; }
+  .nav-group-mobile > div > a { border-radius: 0.75rem; transition: background-color 0.15s, color 0.15s; }
+  .nav-group-mobile > div > a:hover { background-color: #eff6ff; color: #2563eb; }
+  .mobile-sub-toggle {
+    display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem;
+    margin-inline-start: 0.25rem;
+    border-radius: 0.65rem;
+    color: #64748b;
+    background: #f1f5f9;
+    transition: transform 0.3s ease, background-color 0.15s, color 0.15s;
+  }
+  .mobile-sub-toggle:hover { background: #dbeafe; color: #2563eb; }
+  .mobile-sub-toggle[aria-expanded="true"] { transform: rotate(180deg); background: #dbeafe; color: #2563eb; }
+  .mobile-sub {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mobile-sub.open { grid-template-rows: 1fr; }
+  .mobile-sub-inner {
+    overflow: hidden;
+    margin: 0 0.75rem;
+    border-inline-start: 2px solid #dbeafe;
+  }
+  .mobile-sub.open .mobile-sub-inner { margin-bottom: 0.4rem; }
+  .mobile-sub-link {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    border-radius: 0.6rem;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .mobile-sub-link:hover { background-color: #eff6ff; color: #2563eb; }
+
+  /* ── Desktop: services dropdown ───────────────────────────── */
+  .nav-dd { position: relative; }
+  .nav-dd-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 1.35rem 0; /* tall hit-area so the pointer can travel into the panel */
+  }
+  .nav-dd-chevron { transition: transform 0.25s ease; }
+  .nav-dd-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: min(34rem, 90vw);
+    padding-top: 0.25rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px);
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(.2,.8,.2,1), visibility 0.2s;
+    z-index: 60;
+  }
+  .nav-dd:hover .nav-dd-panel,
+  .nav-dd:focus-within .nav-dd-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  .nav-dd:hover .nav-dd-chevron,
+  .nav-dd:focus-within .nav-dd-chevron { transform: rotate(180deg); }
+  .nav-dd:hover .nav-dd-trigger,
+  .nav-dd:focus-within .nav-dd-trigger { color: #2563eb; }
+  /* Allow Esc to force-close even while hovered / focused */
+  .nav-dd.force-closed .nav-dd-panel { opacity: 0; visibility: hidden; transform: translate(-50%, 8px); }
+  .nav-dd.force-closed .nav-dd-chevron { transform: none; }
+
+  .nav-dd-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 1.25rem;
+    padding: 0.9rem;
+    box-shadow: 0 24px 50px -12px rgba(15,23,42,0.22), 0 0 0 1px rgba(15,23,42,0.02);
+  }
+  .nav-dd-card::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 14px; height: 14px;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    border-left: 1px solid #e5e7eb;
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .nav-dd-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.15rem 0.5rem 0.6rem;
+  }
+  .nav-dd-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+  .nav-dd-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem;
+    border-radius: 0.85rem;
+    transition: background-color 0.15s;
+  }
+  .nav-dd-item:hover,
+  .nav-dd-item:focus-visible { background: #eff6ff; }
+  .nav-dd-thumb {
+    width: 2.5rem; height: 2.5rem;
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    border-radius: 0.7rem;
+    overflow: hidden;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+    transition: transform 0.2s ease;
+  }
+  .nav-dd-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .nav-dd-item:hover .nav-dd-thumb { transform: scale(1.06); }
+  .nav-dd-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.4;
+    transition: color 0.15s;
+  }
+  .nav-dd-item:hover .nav-dd-title { color: #1d4ed8; }
+  .nav-dd-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    padding: 0.7rem;
+    border-radius: 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #1d4ed8;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+  .nav-dd-all:hover { background: #eff6ff; border-color: #93c5fd; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-dd-panel, .nav-dd-chevron, .mobile-sub, .mobile-sub-toggle { transition: none; }
   }
 </style>
 
@@ -169,5 +418,27 @@ const siteSubTitle = settings.site_title.split(' ').slice(2).join(' ')
   // Close on link click
   nav?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', closeNav)
+  })
+
+  // Mobile: expand / collapse services sub-list
+  const subToggle = document.getElementById('mobile-services-toggle')
+  const subList = document.getElementById('mobile-services-list')
+  subToggle?.addEventListener('click', () => {
+    const open = subList?.classList.toggle('open') ?? false
+    subToggle.setAttribute('aria-expanded', String(open))
+    subToggle.setAttribute('aria-label', open ? 'إخفاء قائمة الخدمات' : 'عرض قائمة الخدمات')
+  })
+
+  // Desktop dropdown: Esc closes it; reset once pointer/focus leaves
+  const dd = document.getElementById('services-dd')
+  dd?.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      dd.classList.add('force-closed')
+      document.getElementById('services-dd-trigger')?.focus()
+    }
+  })
+  dd?.addEventListener('mouseleave', () => dd.classList.remove('force-closed'))
+  dd?.addEventListener('focusout', e => {
+    if (!dd.contains(e.relatedTarget as Node | null)) dd.classList.remove('force-closed')
   })
 </script>

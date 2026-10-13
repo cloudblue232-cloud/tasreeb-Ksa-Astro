@@ -1,0 +1,614 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro'
+import { BRAND_ICONS } from '../lib/brandIcons'
+import {
+  COMPANY_NAME,
+  COMPANY_NAME_EN,
+  PHONES,
+  SOCIALS,
+  LOCATION,
+  formatPhone,
+  whatsappUrl,
+} from '../lib/contact'
+
+const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
+
+const pageTitle = 'تواصل معنا'
+const pageDescription = `تواصل مع ${COMPANY_NAME} في جدة عبر الهاتف أو واتساب أو حساباتنا على إنستغرام وتيك توك ويوتيوب ولينكدإن. نحن هنا لمساعدتك في اختيار حلول العزل المناسبة لاحتياجاتك.`
+
+// ContactPage + Organization JSON-LD — helps Google show phone numbers & social profiles
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: `${SITE_URL}/contact`,
+  inLanguage: 'ar',
+  mainEntity: {
+    '@type': 'Organization',
+    name: COMPANY_NAME,
+    alternateName: COMPANY_NAME_EN,
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: LOCATION.cityEn,
+      addressCountry: LOCATION.countryCode,
+    },
+    contactPoint: PHONES.map(p => ({
+      '@type': 'ContactPoint',
+      telephone: p.number,
+      contactType: 'customer service',
+      areaServed: 'SA',
+      availableLanguage: ['Arabic'],
+    })),
+    sameAs: SOCIALS.map(s => s.url),
+  },
+}
+---
+
+<PublicLayout title={pageTitle} description={pageDescription}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div id="main-content" class="contact-page">
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero bg-gradient-hero relative overflow-hidden pt-20 pb-36 text-center" aria-labelledby="contact-title">
+      <div class="blob blob-1" aria-hidden="true"></div>
+      <div class="blob blob-2" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+
+      <div class="relative max-w-3xl mx-auto px-4">
+        <span class="hero-badge reveal">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          {COMPANY_NAME}
+        </span>
+        <h1 id="contact-title" class="reveal text-4xl sm:text-6xl font-extrabold text-white mt-6 mb-5 leading-tight" style="--d:80ms">
+          تواصل معنا
+        </h1>
+        <p class="reveal text-blue-100 text-lg sm:text-xl leading-relaxed max-w-2xl mx-auto" style="--d:160ms">
+          نحن هنا لمساعدتك في اختيار حلول العزل المناسبة لاحتياجاتك.
+          <br class="hidden sm:block" />
+          تحدّث مع فريقنا مباشرة واحصل على استشارة مجانية.
+        </p>
+
+        <ul class="reveal flex flex-wrap justify-center gap-3 mt-8" style="--d:240ms" aria-label="مزايا التواصل">
+          <li class="hero-chip"><span aria-hidden="true">⚡</span> رد سريع</li>
+          <li class="hero-chip"><span aria-hidden="true">💬</span> استشارة مجانية</li>
+          <li class="hero-chip"><span aria-hidden="true">📍</span> {LOCATION.city}، السعودية</li>
+        </ul>
+      </div>
+
+      <div class="absolute bottom-0 left-0 right-0" aria-hidden="true">
+        <svg viewBox="0 0 1440 60" fill="none" role="presentation" preserveAspectRatio="none" class="w-full h-12 sm:h-16">
+          <path d="M0 60L1440 60L1440 30C1200 0 960 0 720 15C480 30 240 45 0 30V60Z" fill="#f8fafc" />
+        </svg>
+      </div>
+    </section>
+
+    <div class="bg-slate-50 pb-20">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- ═══════════════ PHONE CARDS ═══════════════ -->
+        <section aria-labelledby="phones-title" class="relative -mt-28 z-10">
+          <h2 id="phones-title" class="sr-only">أرقام الاتصال والواتساب</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {PHONES.map((phone, i) => (
+              <article class="phone-card reveal" style={`--d:${i * 120}ms`}>
+                <div class="flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="phone-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 sm:w-6 sm:h-6">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                      </svg>
+                    </div>
+                    <p class="text-sm font-bold text-blue-600 truncate">{phone.label}</p>
+                  </div>
+                  <button
+                    type="button"
+                    class="copy-btn"
+                    data-copy={phone.number}
+                    id={`copy-phone-${i + 1}`}
+                    aria-label={`نسخ الرقم ${formatPhone(phone.number)}`}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 icon-copy" aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 icon-check" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    <span class="copy-label">نسخ</span>
+                  </button>
+                </div>
+
+                <p class="phone-number" dir="ltr">{formatPhone(phone.number)}</p>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <a href={`tel:${phone.number}`} id={`call-btn-${i + 1}`} class="action-btn action-call">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                    <span class="sm:hidden">اتصال</span><span class="hidden sm:inline">اتصال مباشر</span>
+                  </a>
+                  <a
+                    href={whatsappUrl(phone.number)}
+                    id={`whatsapp-btn-${i + 1}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="action-btn action-wa"
+                    aria-label={`مراسلة ${formatPhone(phone.number)} عبر واتساب`}
+                  >
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true"><path d={BRAND_ICONS.whatsapp} /></svg>
+                    واتساب
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- ═══════════════ SOCIAL MEDIA ═══════════════ -->
+        <section aria-labelledby="social-title" class="mt-20">
+          <div class="text-center mb-10 reveal">
+            <span class="section-eyebrow">حساباتنا الرسمية</span>
+            <h2 id="social-title" class="text-3xl sm:text-4xl font-extrabold text-blue-950 mt-3">تابعنا على منصات التواصل</h2>
+            <p class="text-gray-500 mt-3 max-w-xl mx-auto">شاهد أحدث مشاريعنا ونصائح العزل، وكن أول من يعرف عروضنا.</p>
+          </div>
+
+          <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {SOCIALS.map((s, i) => (
+              <li class="reveal text-center" style={`--d:${i * 90}ms`}>
+                <a
+                  href={s.url}
+                  id={`social-${s.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  class="social-card"
+                  style={`--brand:${s.color};--brand-bg:${s.gradient ?? s.color}`}
+                  aria-label={`${s.name} — ${s.handle} (يفتح في نافذة جديدة)`}
+                >
+                  <span class="social-icon mx-auto" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 "><path d={BRAND_ICONS[s.id]} /></svg>
+                  </span>
+                  <span class="block mt-5 text-lg font-extrabold text-gray-900">{s.name}</span>
+                  <span class="block text-sm text-gray-500 mt-1 truncate" dir="ltr">{s.handle}</span>
+                  <span class="social-cta">
+                    {s.cta}
+                    <span class="social-arrow" aria-hidden="true">←</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <!-- ═══════════════ LOCATION ═══════════════ -->
+        <section aria-labelledby="location-title" class="mt-20 reveal">
+          <div class="location-card">
+            <div class="location-info">
+              <span class="section-eyebrow">موقعنا</span>
+              <h2 id="location-title" class="text-3xl font-extrabold text-blue-950 mt-3 mb-4">
+                مقرّنا في {LOCATION.city}
+              </h2>
+              <p class="text-gray-600 leading-relaxed mb-8">
+                يقع مقر {COMPANY_NAME} حالياً في مدينة {LOCATION.city}. تواصل معنا لتحديد موعد زيارة ومعاينة موقعك.
+              </p>
+
+              <dl class="space-y-4 mb-8">
+                <div class="info-row">
+                  <dt class="info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
+                    </svg>
+                  </dt>
+                  <dd>
+                    <span class="sr-only">العنوان: </span>
+                    <span class="block font-bold text-gray-900">{LOCATION.city}</span>
+                    <span class="block text-sm text-gray-500">{LOCATION.country}</span>
+                  </dd>
+                </div>
+                <div class="info-row">
+                  <dt class="info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+                    </svg>
+                  </dt>
+                  <dd>
+                    <span class="sr-only">الهاتف: </span>
+                    {PHONES.map(p => (
+                      <a href={`tel:${p.number}`} class="block font-bold text-gray-900 hover:text-blue-600 transition-colors" dir="ltr" style="text-align:right">
+                        {formatPhone(p.number)}
+                      </a>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
+
+              <a href={LOCATION.mapsUrl} id="open-maps-btn" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5" aria-hidden="true">
+                  <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                </svg>
+                افتح في خرائط Google
+              </a>
+            </div>
+
+            <div class="map-wrap">
+              <iframe
+                src={LOCATION.embedUrl}
+                title={`خريطة موقع ${COMPANY_NAME} في ${LOCATION.city}`}
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ BOTTOM CTA ═══════════════ -->
+        <section class="mt-20 reveal" aria-labelledby="cta-title">
+          <div class="cta-band">
+            <div class="blob blob-cta" aria-hidden="true"></div>
+            <div class="relative">
+              <h2 id="cta-title" class="text-2xl sm:text-3xl font-extrabold text-white mb-3">لست متأكداً من نوع العزل المناسب؟</h2>
+              <p class="text-blue-100 mb-8 max-w-xl mx-auto">أرسل لنا صور موقعك عبر واتساب وسيقترح عليك فريقنا الحل الأنسب لاحتياجاتك وميزانيتك.</p>
+              <div class="flex flex-wrap justify-center gap-3">
+                <a href={whatsappUrl(PHONES[0].number, 'مرحباً، أرغب في استشارة حول العزل المناسب لموقعي')} id="cta-whatsapp-btn" target="_blank" rel="noopener noreferrer" class="btn-whatsapp text-base">
+                  <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true"><path d={BRAND_ICONS.whatsapp} /></svg>
+                  استشارة عبر واتساب
+                </a>
+                <a href={`tel:${PHONES[0].number}`} id="cta-call-btn" class="cta-call-btn">
+                  اتصل الآن
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</PublicLayout>
+
+<style>
+  /* ── Hero ─────────────────────────────────────────────── */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  }
+  .blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .blob-1 { width: 380px; height: 380px; background: #60a5fa; top: -120px; right: -80px; animation: float 14s ease-in-out infinite; }
+  .blob-2 { width: 320px; height: 320px; background: #22d3ee; bottom: -60px; left: -60px; opacity: 0.35; animation: float 18s ease-in-out infinite reverse; }
+  .blob-cta { width: 300px; height: 300px; background: #38bdf8; top: -140px; left: 10%; opacity: 0.35; animation: float 16s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 25px) scale(1.08); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 1.1rem;
+    border-radius: 9999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 9999px; background: #4ade80;
+    box-shadow: 0 0 0 0 rgba(74,222,128,0.7);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(74,222,128,0); }
+    100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  }
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.95rem;
+    border-radius: 9999px;
+    background: rgba(15,23,42,0.25);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #dbeafe;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* ── Phone cards ──────────────────────────────────────── */
+  .phone-card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 1.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 20px 50px -12px rgba(30,58,138,0.25), 0 0 0 1px rgba(30,58,138,0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  @media (min-width: 640px) { .phone-card { padding: 1.75rem; } }
+  .phone-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 60px -12px rgba(30,58,138,0.32), 0 0 0 1px rgba(37,99,235,0.15);
+  }
+  .phone-icon {
+    width: 2.75rem; height: 2.75rem;
+    display: grid; place-items: center;
+    border-radius: 0.85rem;
+    color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+    box-shadow: 0 8px 20px -6px rgba(37,99,235,0.6);
+    flex-shrink: 0;
+  }
+  @media (min-width: 640px) { .phone-icon { width: 3.25rem; height: 3.25rem; border-radius: 1rem; } }
+  .phone-number {
+    margin: 1.1rem 0 1.25rem;
+    font-size: clamp(1.4rem, 7vw, 2rem);
+    line-height: 1.2;
+    font-weight: 800;
+    color: #172554;
+    letter-spacing: 0.02em;
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Two cards side-by-side from md — size by column width, not viewport */
+  @media (min-width: 768px) { .phone-number { font-size: clamp(1.5rem, 2.6vw, 2rem); } }
+
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem; font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: #e0e7ff; color: #1d4ed8; border-color: #c7d2fe; }
+  .copy-btn .icon-check { display: none; }
+  .copy-btn.copied { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+  .copy-btn.copied .icon-copy { display: none; }
+  .copy-btn.copied .icon-check { display: block; }
+
+  .action-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+    padding: 0.8rem 0.5rem;
+    border-radius: 0.9rem;
+    font-weight: 700; font-size: 0.95rem;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .action-btn:hover { transform: translateY(-2px); }
+  .action-call {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 1.5px solid #bfdbfe;
+  }
+  .action-call:hover { background: #dbeafe; box-shadow: 0 8px 20px -8px rgba(37,99,235,0.45); }
+  .action-wa {
+    color: #fff;
+    background: linear-gradient(135deg, #22c55e, #15803d);
+    box-shadow: 0 6px 16px -6px rgba(22,163,74,0.6);
+  }
+  .action-wa:hover { box-shadow: 0 10px 24px -6px rgba(22,163,74,0.7); }
+
+  /* ── Section eyebrow ──────────────────────────────────── */
+  .section-eyebrow {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    border-radius: 9999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  /* ── Social cards ─────────────────────────────────────── */
+  .social-card {
+    position: relative;
+    display: block;
+    height: 100%;
+    padding: 1.6rem;
+    border-radius: 1.4rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s, border-color 0.3s;
+  }
+  .social-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--brand-bg);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .social-card::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(1.4rem - 1px);
+    background: #fff;
+    z-index: 0;
+  }
+  .social-card > * { position: relative; z-index: 1; }
+  .social-card:hover {
+    transform: translateY(-6px);
+    border-color: transparent;
+    box-shadow: 0 22px 40px -14px color-mix(in srgb, var(--brand) 55%, transparent);
+  }
+  .social-card:hover::before { opacity: 1; }
+
+  .social-icon {
+    width: 3.5rem; height: 3.5rem;
+    display: grid; place-items: center;
+    border-radius: 1rem;
+    color: #fff;
+    background: var(--brand-bg);
+    box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--brand) 70%, transparent);
+    transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
+  }
+  .social-card:hover .social-icon { transform: scale(1.08) rotate(-6deg); }
+
+  .social-cta {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    margin-top: 1.1rem;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--brand);
+  }
+  .social-arrow { transition: transform 0.25s; }
+  .social-card:hover .social-arrow { transform: translateX(-5px); }
+
+  /* ── Location ─────────────────────────────────────────── */
+  .location-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: #fff;
+    border-radius: 1.75rem;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 20px 50px -20px rgba(15,23,42,0.18);
+  }
+  @media (min-width: 1024px) {
+    .location-card { grid-template-columns: 5fr 7fr; }
+  }
+  .location-info { padding: 2.25rem; }
+  @media (min-width: 640px) { .location-info { padding: 2.75rem; } }
+  .info-row { display: flex; align-items: flex-start; gap: 0.9rem; }
+  .info-icon {
+    width: 2.6rem; height: 2.6rem;
+    display: grid; place-items: center;
+    border-radius: 0.8rem;
+    background: #eff6ff;
+    color: #2563eb;
+    flex-shrink: 0;
+  }
+  .map-wrap {
+    position: relative;
+    min-height: 340px;
+    background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+  }
+  .map-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: saturate(1.1) contrast(1.02);
+  }
+
+  /* ── CTA band ─────────────────────────────────────────── */
+  .cta-band {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    border-radius: 1.75rem;
+    background: linear-gradient(135deg, #172554 0%, #1e40af 55%, #2563eb 100%);
+    box-shadow: 0 25px 50px -20px rgba(30,58,138,0.6);
+  }
+  .cta-call-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.4);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .cta-call-btn:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+
+  /* ── Scroll reveal ────────────────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.8,.2,1);
+    transition-delay: var(--d, 0ms);
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .blob, .pulse-dot { animation: none; }
+  }
+</style>
+
+<script>
+  // Scroll-reveal animations
+  const revealEls = document.querySelectorAll<HTMLElement>('.contact-page .reveal')
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+            io.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+    )
+    revealEls.forEach(el => io.observe(el))
+  } else {
+    revealEls.forEach(el => el.classList.add('is-visible'))
+  }
+
+  // Copy phone number to clipboard
+  function legacyCopy(text: string): boolean {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.setAttribute('readonly', '')
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.select()
+    let ok = false
+    try { ok = document.execCommand('copy') } catch { ok = false }
+    ta.remove()
+    return ok
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const value = btn.dataset.copy ?? ''
+      const label = btn.querySelector('.copy-label')
+      let ok = false
+      try {
+        await navigator.clipboard.writeText(value)
+        ok = true
+      } catch {
+        ok = legacyCopy(value)
+      }
+      if (!ok) {
+        window.prompt('انسخ الرقم:', value)
+        return
+      }
+      btn.classList.add('copied')
+      if (label) label.textContent = 'تم النسخ'
+      setTimeout(() => {
+        btn.classList.remove('copied')
+        if (label) label.textContent = 'نسخ'
+      }, 2000)
+    })
+  })
+</script>

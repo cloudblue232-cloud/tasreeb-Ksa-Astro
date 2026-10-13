@@ -16,6 +16,7 @@ export const GET: APIRoute = async () => {
     { loc: SITE_URL, priority: '1.0', changefreq: 'daily' },
     { loc: `${SITE_URL}/services`, priority: '0.9', changefreq: 'weekly' },
     { loc: `${SITE_URL}/articles`, priority: '0.9', changefreq: 'daily' },
+    { loc: `${SITE_URL}/contact`, priority: '0.7', changefreq: 'monthly' },
   ]
 
   const serviceUrls = (services ?? []).map(s => ({
