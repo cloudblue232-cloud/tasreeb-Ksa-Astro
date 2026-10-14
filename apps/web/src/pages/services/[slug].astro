@@ -8,7 +8,7 @@ const { slug } = Astro.params
 
 const [{ data: service }, { data: others }, { data: latestArticles }] = await Promise.all([
   supabase.from('services').select('*').eq('slug', slug).eq('published', true).single(),
-  supabase.from('services').select('id, title, slug').neq('slug', slug).limit(4),
+  supabase.from('services').select('id, title, slug').neq('slug', slug).limit(10),
   supabase.from('articles').select('id, title, slug, created_at').eq('published', true).order('created_at', { ascending: false }).limit(3),
 ])
 
@@ -197,7 +197,7 @@ const faqJsonLd = faqs.length > 0 ? {
               </div>
 
               {others && others.length > 0 && (
-                <nav aria-label="خدمات أخرى" class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                <nav aria-label="خدمات أخرى" class="bg-white mt-25 rounded-2xl border border-gray-100 p-6 shadow-sm">
                   <h3 class="font-bold text-gray-900 mb-4">خدمات أخرى</h3>
                   <ul class="space-y-2">
                     {others.map(s => (
