@@ -71,6 +71,17 @@ const googleAdsId = settings.google_ads_id?.trim()
 
   gtag('config', 'AW-18515270711');
 </script>
+<!-- Event snippet for عملية شراء (1) conversion page -->
+<script>
+  gtag('event', 'conversion', {
+      'send_to': 'AW-18515270711/3BELCNmDip4dELe44vxE',
+      'value': 1.0,
+      'currency': 'EGP',
+      'transaction_id': ''
+      // 'new_customer': true /* calculate dynamically, populate with true/false */,
+  });
+</script>
+
     <!-- Cairo Font — async-loaded to eliminate render-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
