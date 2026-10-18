@@ -66,6 +66,17 @@ export const SOCIALS: SocialAccount[] = [
     color: '#0A66C2',
     cta: 'تابعنا مهنياً',
   },
+  
+{
+  id: 'x',
+  name: 'إكس (X)',
+  handle: '@insulation_MIS',
+  url: 'https://x.com/insulation_MIS',
+  color: '#000000',
+  gradient: 'linear-gradient(135deg, #000000 0%, #1DA1F2 100%)',
+  cta: 'تابع آخر أخبارنا',
+},
+
 ]
 
 export const LOCATION = {
