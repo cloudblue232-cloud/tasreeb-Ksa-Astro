@@ -27,18 +27,28 @@ const {
 const fullTitle = !title || title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`
 const ogImage = image ?? `${SITE_URL}/og-default.png`
 const googleAdsId = settings.google_ads_id?.trim()
+const googleAnalyticsId = settings.google_analytics_id?.trim()
+const gtmId = settings.google_tag_manager_id?.trim()
+const snapId = settings.snapchat_pixel_id?.trim()
+const ttId = settings.tiktok_pixel_id?.trim()
+const metaId = settings.meta_pixel_id?.trim()
+const gscVerification = settings.google_search_console_id?.trim() || 'p1Pr6RMWOa4n1k3PPqxTbfzqsgTM1xUgQ9SHlRJdYho'
 ---
 
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme={settings.color_scheme || 'ocean'}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    {settings.site_keywords && <meta name="keywords" content={settings.site_keywords} />}
     <link rel="canonical" href={canonical} />
 
-    <!-- Google Search Console -->
-<meta name="google-site-verification" content="p1Pr6RMWOa4n1k3PPqxTbfzqsgTM1xUgQ9SHlRJdYho" />
+    <!-- Google Search Console Verification -->
+    {gscVerification && (
+      <meta name="google-site-verification" content={gscVerification} />
+    )}
+
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -59,28 +69,85 @@ const googleAdsId = settings.google_ads_id?.trim()
 
     <!-- Geo-targeting for Saudi Arabia -->
     <meta name="geo.region" content="SA" />
-    <meta name="geo.placename" content="المملكة العربية السعودية" />
+    <meta name="geo.placename" content={settings.address || "المملكة العربية السعودية"} />
     <meta name="geo.position" content="24.7136;46.6753" />
     <meta name="ICBM" content="24.7136, 46.6753" />
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18515270711"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'AW-18515270711');
-</script>
-<!-- Event snippet for عملية شراء (1) conversion page -->
-<script>
-  gtag('event', 'conversion', {
-      'send_to': 'AW-18515270711/3BELCNmDip4dELe44vxE',
-      'value': 1.0,
-      'currency': 'EGP',
-      'transaction_id': ''
-      // 'new_customer': true /* calculate dynamically, populate with true/false */,
-  });
-</script>
+    <!-- Google Tag Manager (GTM) -->
+    {gtmId && (
+      <script define:vars={{ gtmId }}>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer',gtmId);
+      </script>
+    )}
+
+    <!-- Google Analytics (GA4) -->
+    {googleAnalyticsId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}></script>
+        <script define:vars={{ googleAnalyticsId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', googleAnalyticsId);
+        </script>
+      </>
+    )}
+
+    <!-- Google Ads -->
+    {googleAdsId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}></script>
+        <script define:vars={{ googleAdsId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', googleAdsId);
+        </script>
+      </>
+    )}
+
+    <!-- Snapchat Pixel -->
+    {snapId && (
+      <script define:vars={{ snapId }}>
+        (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function(){a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+        a.queue=[];var s='script';var r=t.createElement(s);r.async=!0;
+        r.src=n;var u=t.getElementsByTagName(s)[0];
+        u.parentNode.insertBefore(r,u);})(window,document,'https://sc-static.net/scevent.min.js');
+        snaptr('init', snapId, {});
+        snaptr('track', 'PAGE_VIEW');
+      </script>
+    )}
+
+    <!-- TikTok Pixel -->
+    {ttId && (
+      <script define:vars={{ ttId }}>
+        !function (w, d, t) {
+          w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var c=document.createElement("script");c.type="text/javascript",c.async=!0,c.src=r+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(c,a)};
+          ttq.load(ttId);
+          ttq.page();
+        }(window, document, 'ttq');
+      </script>
+    )}
+
+    <!-- Meta / Facebook Pixel -->
+    {metaId && (
+      <script define:vars={{ metaId }}>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', metaId);
+        fbq('track', 'PageView');
+      </script>
+    )}
 
     <!-- Cairo Font — async-loaded to eliminate render-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -96,27 +163,33 @@ const googleAdsId = settings.google_ads_id?.trim()
     </noscript>
 
     <!-- Tab icon / favicon -->
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" href="/icon-512.png" sizes="512x512" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {settings.favicon_url ? (
+      <link rel="icon" href={settings.favicon_url} sizes="any" />
+    ) : (
+      <>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" href="/icon-512.png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </>
+    )}
 
     <title>{fullTitle}</title>
     <slot name="head" />
 
-    <!-- Google Ads — injected automatically when google_ads_id is set in Site Settings -->
-    {googleAdsId && (
-      <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}></script>
-        <script define:vars={{ googleAdsId }}>
-          window.dataLayer = window.dataLayer || [];
-          function gtag() { dataLayer.push(arguments); }
-          gtag('js', new Date());
-          gtag('config', googleAdsId);
-        </script>
-      </>
-    )}
+    <!-- Custom Head Scripts & Meta Tags (from Site Settings) -->
+    {settings.custom_head_code && <Fragment set:html={settings.custom_head_code} />}
   </head>
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    {gtmId && (
+      <noscript>
+        <iframe src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
+      </noscript>
+    )}
+
     <slot />
+
+    <!-- Custom Body / Footer Scripts (from Site Settings) -->
+    {settings.custom_body_code && <Fragment set:html={settings.custom_body_code} />}
   </body>
 </html>

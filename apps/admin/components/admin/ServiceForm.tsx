@@ -358,6 +358,7 @@ export default function ServiceForm({ service }: ServiceFormProps) {
       {/* Media Library modal */}
       {showMediaLibrary && (
         <MediaLibrary
+          defaultFolder="services"
           onInsert={handleMediaInsert}
           onClose={() => setShowMediaLibrary(false)}
         />

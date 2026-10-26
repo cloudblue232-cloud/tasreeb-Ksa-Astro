@@ -1,6 +1,7 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro'
 import { BRAND_ICONS } from '../lib/brandIcons'
+import { getSettings } from '../lib/settings'
 import {
   COMPANY_NAME,
   COMPANY_NAME_EN,
@@ -11,10 +12,146 @@ import {
   whatsappUrl,
 } from '../lib/contact'
 
+const settings = await getSettings()
 const SITE_URL = (import.meta.env.NEXT_PUBLIC_SITE_URL || 'https://example.com').replace(/\/$/, '')
 
+const companyTitle = settings.site_title || COMPANY_NAME
 const pageTitle = 'تواصل معنا'
-const pageDescription = `تواصل مع ${COMPANY_NAME} في جدة عبر الهاتف أو واتساب أو حساباتنا على إنستغرام وتيك توك ويوتيوب ولينكدإن. نحن هنا لمساعدتك في اختيار حلول العزل المناسبة لاحتياجاتك.`
+const pageDescription = `تواصل مع ${companyTitle} عبر الهاتف أو واتساب أو حساباتنا على منصات التواصل الاجتماعي. نحن هنا لمساعدتك في اختيار أفضل الحلول لاحتياجاتك.`
+
+// Build live social accounts from dashboard settings
+interface ContactSocial {
+  id: string
+  name: string
+  handle: string
+  url: string
+  color: string
+  gradient?: string
+  cta: string
+  iconKey?: string
+  customIcon?: string
+}
+
+const activeSocials: ContactSocial[] = []
+
+if (settings.twitter_url) {
+  activeSocials.push({
+    id: 'x',
+    name: 'منصة إكس (تويتر)',
+    handle: settings.twitter_url.replace(/https?:\/\/(www\.)?(twitter|x)\.com\/?/, '@').replace(/\/$/, '') || '@twitter',
+    url: settings.twitter_url,
+    color: '#000000',
+    gradient: 'linear-gradient(135deg, #111 0%, #333 100%)',
+    cta: 'تابع آخر الأخبار',
+    iconKey: 'x',
+  })
+}
+
+if (settings.instagram_url) {
+  activeSocials.push({
+    id: 'instagram',
+    name: 'إنستغرام',
+    handle: settings.instagram_url.replace(/https?:\/\/(www\.)?instagram\.com\/?/, '@').replace(/\/$/, '') || '@instagram',
+    url: settings.instagram_url,
+    color: '#E4405F',
+    gradient: 'linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%)',
+    cta: 'شاهد أعمالنا',
+    iconKey: 'instagram',
+  })
+}
+
+if (settings.snapchat_url) {
+  activeSocials.push({
+    id: 'snapchat',
+    name: 'سناب شات',
+    handle: settings.snapchat_url.replace(/https?:\/\/(www\.)?snapchat\.com\/add\/?/, '@').replace(/\/$/, '') || '@snapchat',
+    url: settings.snapchat_url,
+    color: '#E0B500',
+    gradient: 'linear-gradient(135deg, #FFFC00 0%, #E6C200 100%)',
+    cta: 'يومياتنا ومشاريعنا',
+    iconKey: 'snapchat',
+  })
+}
+
+if (settings.tiktok_url) {
+  activeSocials.push({
+    id: 'tiktok',
+    name: 'تيك توك',
+    handle: settings.tiktok_url.replace(/https?:\/\/(www\.)?tiktok\.com\/?/, '').replace(/\/$/, '') || '@tiktok',
+    url: settings.tiktok_url,
+    color: '#111111',
+    gradient: 'linear-gradient(135deg, #25F4EE 0%, #111111 45%, #111111 55%, #FE2C55 100%)',
+    cta: 'مقاطع وفيديوهات',
+    iconKey: 'tiktok',
+  })
+}
+
+if (settings.facebook_url) {
+  activeSocials.push({
+    id: 'facebook',
+    name: 'فيسبوك',
+    handle: settings.facebook_url.replace(/https?:\/\/(www\.)?facebook\.com\/?/, '').replace(/\/$/, '') || 'صفحتنا على فيسبوك',
+    url: settings.facebook_url,
+    color: '#1877F2',
+    gradient: 'linear-gradient(135deg, #1877F2 0%, #0c56b8 100%)',
+    cta: 'انضم لمجتمعنا',
+    iconKey: 'facebook',
+  })
+}
+
+if (settings.youtube_url) {
+  activeSocials.push({
+    id: 'youtube',
+    name: 'يوتيوب',
+    handle: settings.youtube_url.replace(/https?:\/\/(www\.)?youtube\.com\/?/, '').replace(/\/$/, '') || '@youtube',
+    url: settings.youtube_url,
+    color: '#FF0000',
+    gradient: 'linear-gradient(135deg, #FF0000 0%, #CC0000 100%)',
+    cta: 'فيديوهات وشروحات',
+    iconKey: 'youtube',
+  })
+}
+
+// Custom Platforms from Dashboard
+try {
+  const customList: { id?: string; name: string; url: string; icon?: string }[] = JSON.parse(settings.custom_social_links || '[]')
+  customList.forEach((cs, i) => {
+    if (cs.url && cs.name) {
+      activeSocials.push({
+        id: cs.id || `custom-${i}`,
+        name: cs.name,
+        handle: cs.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''),
+        url: cs.url,
+        color: '#2563EB',
+        gradient: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)',
+        cta: 'زيارة الحساب',
+        customIcon: cs.icon || '🔗',
+      })
+    }
+  })
+} catch {}
+
+const displaySocials: ContactSocial[] = activeSocials.length > 0 ? activeSocials : SOCIALS.map(s => ({
+  id: s.id,
+  name: s.name,
+  handle: s.handle,
+  url: s.url,
+  color: s.color,
+  gradient: s.gradient,
+  cta: s.cta,
+  iconKey: s.id,
+}))
+
+const displayPhones = [
+  {
+    number: settings.phone || PHONES[0].number,
+    label: 'خط التواصل الأول',
+  },
+  {
+    number: settings.phone_secondary || PHONES[1].number,
+    label: 'خط التواصل الثاني',
+  },
+]
 
 // ContactPage + Organization JSON-LD — helps Google show phone numbers & social profiles
 const jsonLd = {
@@ -26,23 +163,23 @@ const jsonLd = {
   inLanguage: 'ar',
   mainEntity: {
     '@type': 'Organization',
-    name: COMPANY_NAME,
+    name: companyTitle,
     alternateName: COMPANY_NAME_EN,
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: settings.logo_url || `${SITE_URL}/logo.png`,
     address: {
       '@type': 'PostalAddress',
-      addressLocality: LOCATION.cityEn,
+      addressLocality: settings.address || LOCATION.cityEn,
       addressCountry: LOCATION.countryCode,
     },
-    contactPoint: PHONES.map(p => ({
+    contactPoint: displayPhones.map(p => ({
       '@type': 'ContactPoint',
       telephone: p.number,
       contactType: 'customer service',
       areaServed: 'SA',
       availableLanguage: ['Arabic'],
     })),
-    sameAs: SOCIALS.map(s => s.url),
+    sameAs: displaySocials.map(s => s.url),
   },
 }
 ---
@@ -93,7 +230,7 @@ const jsonLd = {
         <section aria-labelledby="phones-title" class="relative -mt-28 z-10">
           <h2 id="phones-title" class="sr-only">أرقام الاتصال والواتساب</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {PHONES.map((phone, i) => (
+            {displayPhones.map((phone, i) => (
               <article class="phone-card reveal" style={`--d:${i * 120}ms`}>
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex items-center gap-3 min-w-0">
@@ -152,11 +289,11 @@ const jsonLd = {
           <div class="text-center mb-10 reveal">
             <span class="section-eyebrow">حساباتنا الرسمية</span>
             <h2 id="social-title" class="text-3xl sm:text-4xl font-extrabold text-blue-950 mt-3">تابعنا على منصات التواصل</h2>
-            <p class="text-gray-500 mt-3 max-w-xl mx-auto">شاهد أحدث مشاريعنا ونصائح العزل، وكن أول من يعرف عروضنا.</p>
+            <p class="text-gray-500 mt-3 max-w-xl mx-auto">شاهد أحدث مشاريعنا وعروضنا، وتواصل معنا عبر منصتك المفضلة.</p>
           </div>
 
           <ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {SOCIALS.map((s, i) => (
+            {displaySocials.map((s, i) => (
               <li class="reveal text-center" style={`--d:${i * 90}ms`}>
                 <a
                   href={s.url}
@@ -168,7 +305,11 @@ const jsonLd = {
                   aria-label={`${s.name} — ${s.handle} (يفتح في نافذة جديدة)`}
                 >
                   <span class="social-icon mx-auto" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 "><path d={BRAND_ICONS[s.id]} /></svg>
+                    {s.iconKey && BRAND_ICONS[s.iconKey as keyof typeof BRAND_ICONS] ? (
+                      <svg viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7"><path d={BRAND_ICONS[s.iconKey as keyof typeof BRAND_ICONS]} /></svg>
+                    ) : (
+                      <span class="text-2xl flex items-center justify-center">{s.customIcon || '🔗'}</span>
+                    )}
                   </span>
                   <span class="block mt-5 text-lg font-extrabold text-gray-900">{s.name}</span>
                   <span class="block text-sm text-gray-500 mt-1 truncate" dir="ltr">{s.handle}</span>
@@ -337,21 +478,21 @@ const jsonLd = {
     border: 1px solid rgba(255,255,255,0.8);
     border-radius: 1.5rem;
     padding: 1.25rem;
-    box-shadow: 0 20px 50px -12px rgba(30,58,138,0.25), 0 0 0 1px rgba(30,58,138,0.04);
+    box-shadow: 0 20px 50px -12px var(--theme-card-shadow, rgba(30,58,138,0.25)), 0 0 0 1px rgba(30,58,138,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   @media (min-width: 640px) { .phone-card { padding: 1.75rem; } }
   .phone-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 28px 60px -12px rgba(30,58,138,0.32), 0 0 0 1px rgba(37,99,235,0.15);
+    box-shadow: 0 28px 60px -12px var(--theme-card-shadow, rgba(30,58,138,0.32)), 0 0 0 1px rgba(37,99,235,0.15);
   }
   .phone-icon {
     width: 2.75rem; height: 2.75rem;
     display: grid; place-items: center;
     border-radius: 0.85rem;
     color: #fff;
-    background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-    box-shadow: 0 8px 20px -6px rgba(37,99,235,0.6);
+    background: var(--theme-btn-primary, linear-gradient(135deg, #3b82f6, #1e3a8a));
+    box-shadow: 0 8px 20px -6px var(--theme-btn-shadow, rgba(37,99,235,0.6));
     flex-shrink: 0;
   }
   @media (min-width: 640px) { .phone-icon { width: 3.25rem; height: 3.25rem; border-radius: 1rem; } }

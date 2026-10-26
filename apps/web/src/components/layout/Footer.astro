@@ -11,17 +11,91 @@ const PHONE = settings.phone
       <!-- Brand -->
       <div class="lg:col-span-2">
         <a href="/" class="inline-block mb-4" aria-label={`${settings.site_title} — الصفحة الرئيسية`}>
-          <img src="/logo.png" alt={settings.site_title} width="640" height="414" class="h-24 w-auto" loading="lazy" />
+          <img src={settings.logo_url || "/logo.png"} alt={settings.site_title} width="640" height="414" class="h-20 w-auto object-contain" loading="lazy" />
         </a>
 
         <p class="text-blue-200 text-sm leading-relaxed max-w-xs">
           {settings.site_description}
         </p>
-        <div class="flex items-center gap-3 mt-5">
-          <a href={`tel:${PHONE}`} class="text-blue-200 hover:text-white text-sm transition-colors">
+
+        <div class="flex flex-col gap-2 mt-4 text-sm text-blue-200">
+          <a href={`tel:${PHONE}`} class="hover:text-white transition-colors flex items-center gap-2">
             <span aria-hidden="true">📞</span> {PHONE}
           </a>
+          {settings.phone_secondary && (
+            <a href={`tel:${settings.phone_secondary}`} class="hover:text-white transition-colors flex items-center gap-2">
+              <span aria-hidden="true">📞</span> {settings.phone_secondary}
+            </a>
+          )}
+          {settings.email && (
+            <a href={`mailto:${settings.email}`} class="hover:text-white transition-colors flex items-center gap-2">
+              <span aria-hidden="true">✉️</span> {settings.email}
+            </a>
+          )}
+          {settings.address && (
+            <div class="flex items-center gap-2 text-blue-300 text-xs">
+              <span aria-hidden="true">📍</span> {settings.address}
+            </div>
+          )}
         </div>
+
+        <!-- Social links -->
+        {(settings.twitter_url || settings.instagram_url || settings.snapchat_url || settings.tiktok_url || settings.facebook_url || settings.youtube_url) && (
+          <div class="flex items-center gap-2.5 mt-4">
+            {settings.twitter_url && (
+              <a href={settings.twitter_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-blue-900 hover:bg-blue-800 flex items-center justify-center text-xs font-bold transition-colors" title="Twitter / X">
+                𝕏
+              </a>
+            )}
+            {settings.instagram_url && (
+              <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-pink-900/60 hover:bg-pink-800 flex items-center justify-center text-xs font-bold transition-colors" title="Instagram">
+                📸
+              </a>
+            )}
+            {settings.snapchat_url && (
+              <a href={settings.snapchat_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-yellow-900/60 hover:bg-yellow-800 flex items-center justify-center text-xs font-bold transition-colors" title="Snapchat">
+                👻
+              </a>
+            )}
+            {settings.tiktok_url && (
+              <a href={settings.tiktok_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-neutral-900 hover:bg-neutral-800 flex items-center justify-center text-xs font-bold transition-colors" title="TikTok">
+                🎵
+              </a>
+            )}
+            {settings.facebook_url && (
+              <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-blue-900/80 hover:bg-blue-800 flex items-center justify-center text-xs font-bold transition-colors" title="Facebook">
+                f
+              </a>
+            )}
+            {settings.youtube_url && (
+              <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-red-900/80 hover:bg-red-800 flex items-center justify-center text-xs font-bold transition-colors" title="YouTube">
+                ▶
+              </a>
+            )}
+
+            {/* Custom Social Platforms */}
+            {(() => {
+              try {
+                const list: { id?: string; name: string; url: string; icon?: string }[] = JSON.parse(settings.custom_social_links || '[]')
+                return list.map(cs => (
+                  <a
+                    key={cs.id || cs.url}
+                    href={cs.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="h-8 px-2 rounded-lg bg-blue-900 hover:bg-blue-800 flex items-center gap-1 text-xs font-bold transition-colors"
+                    title={cs.name}
+                  >
+                    <span>{cs.icon || '🔗'}</span>
+                    <span class="text-[11px]">{cs.name}</span>
+                  </a>
+                ))
+              } catch {
+                return null
+              }
+            })()}
+          </div>
+        )}
       </div>
 
       <!-- Quick Links -->

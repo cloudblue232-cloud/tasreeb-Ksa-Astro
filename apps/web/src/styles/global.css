@@ -2,12 +2,197 @@
 
 @theme {
   --font-cairo: 'Cairo', sans-serif;
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-900: #1e3a8a;
+  --color-brand-50: var(--color-blue-50);
+  --color-brand-100: var(--color-blue-100);
+  --color-brand-500: var(--color-blue-500);
+  --color-brand-600: var(--color-blue-600);
+  --color-brand-700: var(--color-blue-700);
+  --color-brand-900: var(--color-blue-900);
+}
+
+/* ==========================================================================
+   COLOR SCHEMES (9 Curated Themes)
+   ========================================================================== */
+
+/* 1. Ocean Blue (Default) */
+:root,
+html[data-theme="ocean"] {
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #0f172a;
+  --theme-hero-bg: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%);
+  --theme-btn-primary: linear-gradient(135deg, #2563eb, #1d4ed8);
+  --theme-btn-shadow: rgba(37, 99, 235, 0.35);
+  --theme-card-shadow: rgba(30, 58, 138, 0.25);
+  --theme-heading-color: #1e3a8a;
+}
+
+/* 2. Saudi Emerald */
+html[data-theme="emerald"] {
+  --color-blue-50: #ecfdf5;
+  --color-blue-100: #d1fae5;
+  --color-blue-200: #a7f3d0;
+  --color-blue-300: #6ee7b7;
+  --color-blue-400: #34d399;
+  --color-blue-500: #10b981;
+  --color-blue-600: #059669;
+  --color-blue-700: #047857;
+  --color-blue-800: #065f46;
+  --color-blue-900: #064e3b;
+  --color-blue-950: #022c22;
+  --theme-hero-bg: linear-gradient(135deg, #064e3b 0%, #059669 50%, #047857 100%);
+  --theme-btn-primary: linear-gradient(135deg, #059669, #047857);
+  --theme-btn-shadow: rgba(5, 150, 105, 0.35);
+  --theme-card-shadow: rgba(6, 78, 59, 0.25);
+  --theme-heading-color: #064e3b;
+}
+
+/* 3. Royal Navy & Gold */
+html[data-theme="royal"] {
+  --color-blue-50: #f8fafc;
+  --color-blue-100: #f1f5f9;
+  --color-blue-200: #e2e8f0;
+  --color-blue-300: #cbd5e1;
+  --color-blue-400: #94a3b8;
+  --color-blue-500: #f59e0b;
+  --color-blue-600: #d97706;
+  --color-blue-700: #b45309;
+  --color-blue-800: #1e293b;
+  --color-blue-900: #0f172a;
+  --color-blue-950: #020617;
+  --theme-hero-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #78350f 100%);
+  --theme-btn-primary: linear-gradient(135deg, #d97706, #b45309);
+  --theme-btn-shadow: rgba(217, 119, 6, 0.4);
+  --theme-card-shadow: rgba(15, 23, 42, 0.25);
+  --theme-heading-color: #0f172a;
+}
+
+/* 4. Modern Teal */
+html[data-theme="teal"] {
+  --color-blue-50: #ecfeff;
+  --color-blue-100: #cffafe;
+  --color-blue-200: #a5f3fc;
+  --color-blue-300: #67e8f9;
+  --color-blue-400: #22d3ee;
+  --color-blue-500: #06b6d4;
+  --color-blue-600: #0891b2;
+  --color-blue-700: #0e7490;
+  --color-blue-800: #155e75;
+  --color-blue-900: #164e63;
+  --color-blue-950: #083344;
+  --theme-hero-bg: linear-gradient(135deg, #164e63 0%, #0891b2 50%, #0e7490 100%);
+  --theme-btn-primary: linear-gradient(135deg, #0891b2, #0e7490);
+  --theme-btn-shadow: rgba(8, 145, 178, 0.35);
+  --theme-card-shadow: rgba(22, 78, 99, 0.25);
+  --theme-heading-color: #164e63;
+}
+
+/* 5. Industrial Amber & Slate */
+html[data-theme="amber"] {
+  --color-blue-50: #fff7ed;
+  --color-blue-100: #ffedd5;
+  --color-blue-200: #fed7aa;
+  --color-blue-300: #fdba74;
+  --color-blue-400: #fb923c;
+  --color-blue-500: #f97316;
+  --color-blue-600: #ea580c;
+  --color-blue-700: #c2410c;
+  --color-blue-800: #1e293b;
+  --color-blue-900: #0f172a;
+  --color-blue-950: #020617;
+  --theme-hero-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #c2410c 100%);
+  --theme-btn-primary: linear-gradient(135deg, #ea580c, #c2410c);
+  --theme-btn-shadow: rgba(234, 88, 12, 0.4);
+  --theme-card-shadow: rgba(15, 23, 42, 0.25);
+  --theme-heading-color: #0f172a;
+}
+
+/* 6. Ruby Burgundy */
+html[data-theme="ruby"] {
+  --color-blue-50: #fff1f2;
+  --color-blue-100: #ffe4e6;
+  --color-blue-200: #fecdd3;
+  --color-blue-300: #fda4af;
+  --color-blue-400: #fb7185;
+  --color-blue-500: #f43f5e;
+  --color-blue-600: #e11d48;
+  --color-blue-700: #be123c;
+  --color-blue-800: #9f1239;
+  --color-blue-900: #881337;
+  --color-blue-950: #4c0519;
+  --theme-hero-bg: linear-gradient(135deg, #4c0519 0%, #881337 50%, #be123c 100%);
+  --theme-btn-primary: linear-gradient(135deg, #e11d48, #be123c);
+  --theme-btn-shadow: rgba(225, 29, 72, 0.35);
+  --theme-card-shadow: rgba(136, 19, 55, 0.25);
+  --theme-heading-color: #881337;
+}
+
+/* 7. Midnight Sapphire */
+html[data-theme="midnight"] {
+  --color-blue-50: #eef2ff;
+  --color-blue-100: #e0e7ff;
+  --color-blue-200: #c7d2fe;
+  --color-blue-300: #a5b4fc;
+  --color-blue-400: #818cf8;
+  --color-blue-500: #6366f1;
+  --color-blue-600: #4f46e5;
+  --color-blue-700: #4338ca;
+  --color-blue-800: #3730a3;
+  --color-blue-900: #312e81;
+  --color-blue-950: #1e1b4b;
+  --theme-hero-bg: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  --theme-btn-primary: linear-gradient(135deg, #4f46e5, #4338ca);
+  --theme-btn-shadow: rgba(79, 70, 229, 0.35);
+  --theme-card-shadow: rgba(30, 27, 75, 0.25);
+  --theme-heading-color: #312e81;
+}
+
+/* 8. Desert Bronze */
+html[data-theme="bronze"] {
+  --color-blue-50: #fefce8;
+  --color-blue-100: #fef9c3;
+  --color-blue-200: #fef08a;
+  --color-blue-300: #fde047;
+  --color-blue-400: #facc15;
+  --color-blue-500: #eab308;
+  --color-blue-600: #d97706;
+  --color-blue-700: #b45309;
+  --color-blue-800: #92400e;
+  --color-blue-900: #78350f;
+  --color-blue-950: #451a03;
+  --theme-hero-bg: linear-gradient(135deg, #451a03 0%, #78350f 50%, #b45309 100%);
+  --theme-btn-primary: linear-gradient(135deg, #d97706, #b45309);
+  --theme-btn-shadow: rgba(217, 119, 6, 0.4);
+  --theme-card-shadow: rgba(69, 26, 3, 0.25);
+  --theme-heading-color: #78350f;
+}
+
+/* 9. Charcoal Platinum */
+html[data-theme="charcoal"] {
+  --color-blue-50: #f8fafc;
+  --color-blue-100: #f1f5f9;
+  --color-blue-200: #e2e8f0;
+  --color-blue-300: #cbd5e1;
+  --color-blue-400: #94a3b8;
+  --color-blue-500: #0ea5e9;
+  --color-blue-600: #0284c7;
+  --color-blue-700: #334155;
+  --color-blue-800: #1e293b;
+  --color-blue-900: #0f172a;
+  --color-blue-950: #020617;
+  --theme-hero-bg: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+  --theme-btn-primary: linear-gradient(135deg, #0284c7, #0369a1);
+  --theme-btn-shadow: rgba(2, 132, 199, 0.4);
+  --theme-card-shadow: rgba(15, 23, 42, 0.25);
+  --theme-heading-color: #0f172a;
 }
 
 /* Base */
@@ -25,7 +210,7 @@ body {
 
 /* Gradients */
 .bg-gradient-hero {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%);
+  background: var(--theme-hero-bg, linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #1d4ed8 100%));
 }
 
 /* Buttons */
@@ -34,18 +219,19 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: var(--theme-btn-primary, linear-gradient(135deg, #2563eb, #1d4ed8));
   color: #fff;
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 9999px;
   text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 4px 14px 0 rgba(37,99,235,0.35);
+  box-shadow: 0 4px 14px 0 var(--theme-btn-shadow, rgba(37,99,235,0.35));
 }
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px 0 rgba(37,99,235,0.45);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px 0 var(--theme-btn-shadow, rgba(37,99,235,0.45));
 }
 
 .btn-whatsapp {
@@ -82,13 +268,13 @@ body {
   color: #374151;
   font-size: 1.05rem;
 }
-.prose-arabic h1 { font-size: 2rem; font-weight: 800; color: #1e3a8a; margin: 2rem 0 1.25rem; line-height: 1.4; }
-.prose-arabic h2 { font-size: 1.5rem; font-weight: 800; color: #1e3a8a; margin: 2rem 0 1rem; }
-.prose-arabic h3 { font-size: 1.25rem; font-weight: 700; color: #1d4ed8; margin: 1.5rem 0 0.75rem; }
+.prose-arabic h1 { font-size: 2rem; font-weight: 800; color: var(--theme-heading-color, #1e3a8a); margin: 2rem 0 1.25rem; line-height: 1.4; }
+.prose-arabic h2 { font-size: 1.5rem; font-weight: 800; color: var(--theme-heading-color, #1e3a8a); margin: 2rem 0 1rem; }
+.prose-arabic h3 { font-size: 1.25rem; font-weight: 700; color: var(--color-blue-700, #1d4ed8); margin: 1.5rem 0 0.75rem; }
 .prose-arabic p  { margin-bottom: 1.25rem; }
 .prose-arabic ul { list-style: disc; padding-right: 1.5rem; margin-bottom: 1.25rem; }
 .prose-arabic li { margin-bottom: 0.4rem; }
-.prose-arabic strong { color: #1e3a8a; font-weight: 700; }
+.prose-arabic strong { color: var(--theme-heading-color, #1e3a8a); font-weight: 700; }
 .prose-arabic img,
 .prose-arabic .article-img {
   max-width: 100%;

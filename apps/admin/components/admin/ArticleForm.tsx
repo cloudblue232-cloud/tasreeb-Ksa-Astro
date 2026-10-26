@@ -299,6 +299,7 @@ function insertTag(tag: string) {
       {/* Media Library modal */}
       {showMediaLibrary && (
         <MediaLibrary
+          defaultFolder="articles"
           onInsert={handleMediaInsert}
           onClose={() => setShowMediaLibrary(false)}
         />
