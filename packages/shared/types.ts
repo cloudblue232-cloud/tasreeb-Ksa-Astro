@@ -51,6 +51,10 @@ export type SiteSettings = {
   whatsapp: string
   email: string
   address: string
+  location_city: string
+  location_description: string
+  google_maps_url: string
+  google_maps_embed_url: string
   working_hours: string
 
   // Social Links
@@ -248,7 +252,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   phone_secondary: '+966530955302',
   whatsapp: '966536207027',
   email: 'info@tasreeb-ksa.com',
-  address: 'المملكة العربية السعودية',
+  address: 'جدة، المملكة العربية السعودية',
+  location_city: 'جدة',
+  location_description: 'تواصل معنا لتحديد موعد زيارة ومعاينة موقعك.',
+  google_maps_url: 'https://www.google.com/maps/search/?api=1&query=Jeddah%2C+Saudi+Arabia',
+  google_maps_embed_url: 'https://www.google.com/maps?q=Jeddah,+Saudi+Arabia&z=11&hl=ar&output=embed',
   working_hours: 'على مدار 24 ساعة — 7 أيام في الأسبوع',
   twitter_url: '',
   instagram_url: '',

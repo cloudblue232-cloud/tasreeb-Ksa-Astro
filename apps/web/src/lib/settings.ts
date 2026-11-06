@@ -39,6 +39,10 @@ export async function getSettings(): Promise<SiteSettings> {
       whatsapp:                 map['whatsapp']                 ?? DEFAULTS.whatsapp,
       email:                    map['email']                    ?? DEFAULTS.email,
       address:                  map['address']                  ?? DEFAULTS.address,
+      location_city:            map['location_city']            ?? DEFAULTS.location_city,
+      location_description:     map['location_description']     ?? DEFAULTS.location_description,
+      google_maps_url:          map['google_maps_url']          ?? DEFAULTS.google_maps_url,
+      google_maps_embed_url:    map['google_maps_embed_url']    ?? DEFAULTS.google_maps_embed_url,
       working_hours:            map['working_hours']            ?? DEFAULTS.working_hours,
 
       // Social Links

@@ -505,37 +505,144 @@ export default function SettingsForm() {
             />
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5">
-            {/* Address */}
-            <div>
-              <label htmlFor="setting-address" className="block text-sm font-bold text-gray-800 mb-1.5">
-                المدينة / المقر الجغرافي
-              </label>
-              <input
-                id="setting-address"
-                type="text"
-                value={values.address}
-                onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="الرياض، المملكة العربية السعودية"
-                className={inputCls}
-              />
-              <p className="text-xs text-gray-400 mt-1">يُستخدم في وسم النطاق الجغرافي Geo-tagging ومحركات البحث.</p>
+          {/* Working Hours */}
+          <div>
+            <label htmlFor="setting-working_hours" className="block text-sm font-bold text-gray-800 mb-1.5">
+              ساعات وأوقات العمل
+            </label>
+            <input
+              id="setting-working_hours"
+              type="text"
+              value={values.working_hours}
+              onChange={(e) => handleChange('working_hours', e.target.value)}
+              placeholder="على مدار 24 ساعة — 7 أيام في الأسبوع"
+              className={inputCls}
+            />
+          </div>
+
+          {/* ================= LOCATION & GOOGLE MAPS ================= */}
+          <div className="pt-6 border-t border-gray-100">
+            <div className="mb-4">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <span>📍</span> قسم المقر وخريطة Google (صفحة تواصل معنا)
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                تحكم بالكامل في بطاقة المقر والخريطة التفاعلية ورابط Google Maps في صفحة تواصل معنا.
+              </p>
             </div>
 
-            {/* Working Hours */}
-            <div>
-              <label htmlFor="setting-working_hours" className="block text-sm font-bold text-gray-800 mb-1.5">
-                ساعات وأوقات العمل
+            <div className="grid sm:grid-cols-2 gap-5 mb-5">
+              {/* City Name */}
+              <div>
+                <label htmlFor="setting-location_city" className="block text-sm font-bold text-gray-800 mb-1.5">
+                  اسم المدينة / المقر الرئيسي <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="setting-location_city"
+                  type="text"
+                  value={values.location_city}
+                  onChange={(e) => handleChange('location_city', e.target.value)}
+                  placeholder="جدة (أو الرياض، الدمام، مكة...)"
+                  className={inputCls}
+                  required
+                />
+                <p className="text-xs text-gray-400 mt-1">يتحكم في عنوان "مقرّنا في [المدينة]" والشارة العلوية في صفحة التواصل.</p>
+              </div>
+
+              {/* Detailed Address */}
+              <div>
+                <label htmlFor="setting-address" className="block text-sm font-bold text-gray-800 mb-1.5">
+                  العنوان التفصيلي للمقر
+                </label>
+                <input
+                  id="setting-address"
+                  type="text"
+                  value={values.address}
+                  onChange={(e) => handleChange('address', e.target.value)}
+                  placeholder="جدة، المملكة العربية السعودية"
+                  className={inputCls}
+                />
+                <p className="text-xs text-gray-400 mt-1">يظهر في بطاقة العنوان الجغرافي وبيانات محركات البحث (SEO).</p>
+              </div>
+            </div>
+
+            {/* Location Description */}
+            <div className="mb-5">
+              <label htmlFor="setting-location_description" className="block text-sm font-bold text-gray-800 mb-1.5">
+                النص الوصفي للمقر والزيارات
               </label>
-              <input
-                id="setting-working_hours"
-                type="text"
-                value={values.working_hours}
-                onChange={(e) => handleChange('working_hours', e.target.value)}
-                placeholder="على مدار 24 ساعة — 7 أيام في الأسبوع"
+              <textarea
+                id="setting-location_description"
+                rows={2}
+                value={values.location_description}
+                onChange={(e) => handleChange('location_description', e.target.value)}
+                placeholder="تواصل معنا لتحديد موعد زيارة ومعاينة موقعك مجاناً."
                 className={inputCls}
               />
+              <p className="text-xs text-gray-400 mt-1">يظهر كفقرة تعريفية تحت عنوان المقر في صفحة التواصل.</p>
             </div>
+
+            <div className="grid sm:grid-cols-2 gap-5 mb-5">
+              {/* Google Maps Link */}
+              <div>
+                <label htmlFor="setting-google_maps_url" className="block text-sm font-bold text-gray-800 mb-1.5">
+                  رابط خرائط Google المباشر (Google Maps URL)
+                </label>
+                <input
+                  id="setting-google_maps_url"
+                  type="url"
+                  dir="ltr"
+                  value={values.google_maps_url}
+                  onChange={(e) => handleChange('google_maps_url', e.target.value)}
+                  placeholder="https://maps.app.goo.gl/... أو https://google.com/maps/..."
+                  className={`${inputCls} text-left font-mono text-xs`}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  رابط زر <strong>"افتح في خرائط Google"</strong> لتوجيه العميل مباشرة لتطبيق الخرائط.
+                </p>
+              </div>
+
+              {/* Google Maps Embed URL */}
+              <div>
+                <label htmlFor="setting-google_maps_embed_url" className="block text-sm font-bold text-gray-800 mb-1.5">
+                  رابط تضمين الخريطة (Google Maps Embed)
+                </label>
+                <input
+                  id="setting-google_maps_embed_url"
+                  type="text"
+                  dir="ltr"
+                  value={values.google_maps_embed_url}
+                  onChange={(e) => {
+                    const raw = e.target.value
+                    const match = raw.match(/src=["'](.*?)["']/)
+                    handleChange('google_maps_embed_url', match ? match[1] : raw)
+                  }}
+                  placeholder="https://www.google.com/maps?q=... أو الصق كود <iframe> كاملاً"
+                  className={`${inputCls} text-left font-mono text-xs`}
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  رابط الخريطة التفاعلية (يمكنك لصق كود <code>&lt;iframe&gt;</code> من خيار "مشاركة &gt; تضمين خريطة" وسيُستخرج الرابط تلقائياً).
+                </p>
+              </div>
+            </div>
+
+            {/* Live Map Preview inside Admin */}
+            {values.google_maps_embed_url && (
+              <div className="mt-4 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                <div className="px-3.5 py-2 bg-gray-100 border-b border-gray-200 text-xs font-bold text-gray-700 flex items-center justify-between">
+                  <span>معاينة حية للخريطة الحالية</span>
+                  <span className="text-[11px] text-green-600 font-normal">متصلة وجاهزة</span>
+                </div>
+                <div className="h-48 w-full">
+                  <iframe
+                    src={values.google_maps_embed_url}
+                    title="معاينة الخريطة"
+                    className="w-full h-full border-0"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
