@@ -195,6 +195,66 @@ html[data-theme="charcoal"] {
   --theme-heading-color: #0f172a;
 }
 
+/* 10. Saudi Lavender */
+html[data-theme="lavender"] {
+  --color-blue-50: #faf5ff;
+  --color-blue-100: #f3e8ff;
+  --color-blue-200: #e9d5ff;
+  --color-blue-300: #d8b4fe;
+  --color-blue-400: #c084fc;
+  --color-blue-500: #a855f7;
+  --color-blue-600: #8b2fc9;
+  --color-blue-700: #721c9e;
+  --color-blue-800: #58147d;
+  --color-blue-900: #3f0c5c;
+  --color-blue-950: #220534;
+  --theme-hero-bg: linear-gradient(135deg, #220534 0%, #4a0d6d 50%, #721c9e 100%);
+  --theme-btn-primary: linear-gradient(135deg, #8b2fc9, #721c9e);
+  --theme-btn-shadow: rgba(139, 47, 201, 0.35);
+  --theme-card-shadow: rgba(63, 12, 92, 0.25);
+  --theme-heading-color: #3f0c5c;
+}
+
+/* 11. Najdi Terracotta */
+html[data-theme="terracotta"] {
+  --color-blue-50: #fff7ed;
+  --color-blue-100: #ffedd5;
+  --color-blue-200: #fed7aa;
+  --color-blue-300: #fdba74;
+  --color-blue-400: #fb923c;
+  --color-blue-500: #f97316;
+  --color-blue-600: #c24118;
+  --color-blue-700: #9e3113;
+  --color-blue-800: #7d2711;
+  --color-blue-900: #5a1d0d;
+  --color-blue-950: #330f07;
+  --theme-hero-bg: linear-gradient(135deg, #330f07 0%, #7d2711 50%, #c24118 100%);
+  --theme-btn-primary: linear-gradient(135deg, #c24118, #9e3113);
+  --theme-btn-shadow: rgba(194, 65, 24, 0.4);
+  --theme-card-shadow: rgba(90, 29, 13, 0.25);
+  --theme-heading-color: #5a1d0d;
+}
+
+/* 12. Deep Forest */
+html[data-theme="forest"] {
+  --color-blue-50: #f0fdf4;
+  --color-blue-100: #dcfce7;
+  --color-blue-200: #bbf7d0;
+  --color-blue-300: #86efac;
+  --color-blue-400: #4ade80;
+  --color-blue-500: #22c55e;
+  --color-blue-600: #2d6a4f;
+  --color-blue-700: #1b4332;
+  --color-blue-800: #143526;
+  --color-blue-900: #0d281c;
+  --color-blue-950: #081c15;
+  --theme-hero-bg: linear-gradient(135deg, #081c15 0%, #1b4332 50%, #2d6a4f 100%);
+  --theme-btn-primary: linear-gradient(135deg, #2d6a4f, #1b4332);
+  --theme-btn-shadow: rgba(45, 106, 79, 0.35);
+  --theme-card-shadow: rgba(13, 40, 28, 0.25);
+  --theme-heading-color: #0d281c;
+}
+
 /* Base */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -315,7 +375,7 @@ details[open] > div {
 
 /* Focus styles for keyboard navigation */
 :focus-visible {
-  outline: 3px solid #2563eb;
+  outline: 3px solid var(--color-blue-600, #2563eb);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -326,7 +386,7 @@ details[open] > div {
   top: -100%;
   right: 1rem;
   padding: 0.75rem 1.5rem;
-  background: #1e3a8a;
+  background: var(--theme-heading-color, #1e3a8a);
   color: #fff;
   font-weight: 700;
   font-size: 0.95rem;

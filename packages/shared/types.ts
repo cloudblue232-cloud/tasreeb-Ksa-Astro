@@ -85,6 +85,9 @@ export type ColorSchemeId =
   | 'midnight'
   | 'bronze'
   | 'charcoal'
+  | 'lavender'
+  | 'terracotta'
+  | 'forest'
 
 export interface ColorSchemeOption {
   id: ColorSchemeId
@@ -197,6 +200,39 @@ export const COLOR_SCHEMES: ColorSchemeOption[] = [
     accent: '#0ea5e9',
     lightBg: '#f8fafc',
     previewGradient: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%)',
+  },
+  {
+    id: 'lavender',
+    nameAr: 'اللافندر الملكي السعودي',
+    nameEn: 'Saudi Lavender',
+    description: 'مستوحى من زهور الخزامى والبروتوكول السعودي الرسمي للمراسم والاحتفاء',
+    primary: '#8b2fc9',
+    secondary: '#3f0c5c',
+    accent: '#a855f7',
+    lightBg: '#faf5ff',
+    previewGradient: 'linear-gradient(135deg, #220534 0%, #4a0d6d 50%, #721c9e 100%)',
+  },
+  {
+    id: 'terracotta',
+    nameAr: 'التيراكوتا النجدية',
+    nameEn: 'Najdi Terracotta',
+    description: 'دفء الطين النجدي وتناغم العزل الحراري الفعال مع البيئة الصحراوية',
+    primary: '#c24118',
+    secondary: '#5a1d0d',
+    accent: '#ea580c',
+    lightBg: '#fff7ed',
+    previewGradient: 'linear-gradient(135deg, #330f07 0%, #7d2711 50%, #c24118 100%)',
+  },
+  {
+    id: 'forest',
+    nameAr: 'الغابة الخضراء العميقة',
+    nameEn: 'Deep Forest',
+    description: 'درجات الأخضر الصنوبري الفاخر تمنح طابع الثبات الهندسي والهدوء والاستدامة',
+    primary: '#2d6a4f',
+    secondary: '#081c15',
+    accent: '#40916c',
+    lightBg: '#f0fdf4',
+    previewGradient: 'linear-gradient(135deg, #081c15 0%, #1b4332 50%, #2d6a4f 100%)',
   },
 ]
 

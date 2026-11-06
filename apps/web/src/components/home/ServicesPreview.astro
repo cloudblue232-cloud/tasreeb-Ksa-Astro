@@ -29,7 +29,7 @@ const icons: Record<string, string> = {
         {services.slice(0, 6).map((service, i) => (
           <a href={`/services/${service.slug}`} id={`home-service-card-${i + 1}`}
             class="card-hover group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200 block">
-            <div class="w-full h-44 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div class="w-full h-44 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
               {service.image_url ? (
                 <img
                   src={service.image_url}

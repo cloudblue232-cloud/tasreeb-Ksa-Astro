@@ -122,8 +122,8 @@ try {
         name: cs.name,
         handle: cs.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''),
         url: cs.url,
-        color: '#2563EB',
-        gradient: 'linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%)',
+        color: 'var(--color-blue-600, #2563EB)',
+        gradient: 'var(--theme-btn-primary, linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%))',
         cta: 'زيارة الحساب',
         customIcon: cs.icon || '🔗',
       })
@@ -427,9 +427,9 @@ const jsonLd = {
     opacity: 0.55;
     pointer-events: none;
   }
-  .blob-1 { width: 380px; height: 380px; background: #60a5fa; top: -120px; right: -80px; animation: float 14s ease-in-out infinite; }
-  .blob-2 { width: 320px; height: 320px; background: #22d3ee; bottom: -60px; left: -60px; opacity: 0.35; animation: float 18s ease-in-out infinite reverse; }
-  .blob-cta { width: 300px; height: 300px; background: #38bdf8; top: -140px; left: 10%; opacity: 0.35; animation: float 16s ease-in-out infinite; }
+  .blob-1 { width: 380px; height: 380px; background: var(--color-blue-400, #60a5fa); top: -120px; right: -80px; animation: float 14s ease-in-out infinite; }
+  .blob-2 { width: 320px; height: 320px; background: var(--color-blue-300, #22d3ee); bottom: -60px; left: -60px; opacity: 0.35; animation: float 18s ease-in-out infinite reverse; }
+  .blob-cta { width: 300px; height: 300px; background: var(--color-blue-400, #38bdf8); top: -140px; left: 10%; opacity: 0.35; animation: float 16s ease-in-out infinite; }
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
     50% { transform: translate(30px, 25px) scale(1.08); }
@@ -466,7 +466,7 @@ const jsonLd = {
     border-radius: 9999px;
     background: rgba(15,23,42,0.25);
     border: 1px solid rgba(255,255,255,0.15);
-    color: #dbeafe;
+    color: var(--color-blue-100, #dbeafe);
     font-size: 0.85rem;
     font-weight: 600;
   }
@@ -484,7 +484,7 @@ const jsonLd = {
   @media (min-width: 640px) { .phone-card { padding: 1.75rem; } }
   .phone-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 28px 60px -12px var(--theme-card-shadow, rgba(30,58,138,0.32)), 0 0 0 1px rgba(37,99,235,0.15);
+    box-shadow: 0 28px 60px -12px var(--theme-card-shadow, rgba(30,58,138,0.32)), 0 0 0 1px var(--color-blue-500, rgba(37,99,235,0.15));
   }
   .phone-icon {
     width: 2.75rem; height: 2.75rem;
@@ -501,7 +501,7 @@ const jsonLd = {
     font-size: clamp(1.4rem, 7vw, 2rem);
     line-height: 1.2;
     font-weight: 800;
-    color: #172554;
+    color: var(--theme-heading-color, #172554);
     letter-spacing: 0.02em;
     text-align: right;
     white-space: nowrap;
@@ -522,7 +522,7 @@ const jsonLd = {
     transition: all 0.2s;
     flex-shrink: 0;
   }
-  .copy-btn:hover { background: #e0e7ff; color: #1d4ed8; border-color: #c7d2fe; }
+  .copy-btn:hover { background: var(--color-blue-100, #e0e7ff); color: var(--color-blue-700, #1d4ed8); border-color: var(--color-blue-200, #c7d2fe); }
   .copy-btn .icon-check { display: none; }
   .copy-btn.copied { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
   .copy-btn.copied .icon-copy { display: none; }
@@ -539,11 +539,11 @@ const jsonLd = {
   }
   .action-btn:hover { transform: translateY(-2px); }
   .action-call {
-    color: #1d4ed8;
-    background: #eff6ff;
-    border: 1.5px solid #bfdbfe;
+    color: var(--color-blue-700, #1d4ed8);
+    background: var(--color-blue-50, #eff6ff);
+    border: 1.5px solid var(--color-blue-200, #bfdbfe);
   }
-  .action-call:hover { background: #dbeafe; box-shadow: 0 8px 20px -8px rgba(37,99,235,0.45); }
+  .action-call:hover { background: var(--color-blue-100, #dbeafe); box-shadow: 0 8px 20px -8px var(--theme-btn-shadow, rgba(37,99,235,0.45)); }
   .action-wa {
     color: #fff;
     background: linear-gradient(135deg, #22c55e, #15803d);
@@ -556,8 +556,8 @@ const jsonLd = {
     display: inline-block;
     padding: 0.3rem 0.9rem;
     border-radius: 9999px;
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: var(--color-blue-100, #dbeafe);
+    color: var(--color-blue-700, #1d4ed8);
     font-size: 0.8rem;
     font-weight: 800;
   }
@@ -639,14 +639,14 @@ const jsonLd = {
     width: 2.6rem; height: 2.6rem;
     display: grid; place-items: center;
     border-radius: 0.8rem;
-    background: #eff6ff;
-    color: #2563eb;
+    background: var(--color-blue-50, #eff6ff);
+    color: var(--color-blue-600, #2563eb);
     flex-shrink: 0;
   }
   .map-wrap {
     position: relative;
     min-height: 340px;
-    background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+    background: linear-gradient(135deg, var(--color-blue-100, #dbeafe), var(--color-blue-200, #e0e7ff));
   }
   .map-wrap iframe {
     position: absolute;
@@ -664,8 +664,8 @@ const jsonLd = {
     text-align: center;
     padding: 3.5rem 1.5rem;
     border-radius: 1.75rem;
-    background: linear-gradient(135deg, #172554 0%, #1e40af 55%, #2563eb 100%);
-    box-shadow: 0 25px 50px -20px rgba(30,58,138,0.6);
+    background: var(--theme-hero-bg, linear-gradient(135deg, #172554 0%, #1e40af 55%, #2563eb 100%));
+    box-shadow: 0 25px 50px -20px var(--theme-card-shadow, rgba(30,58,138,0.6));
   }
   .cta-call-btn {
     display: inline-flex; align-items: center; gap: 0.5rem;

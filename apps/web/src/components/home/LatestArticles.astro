@@ -26,7 +26,7 @@ function truncate(str: string, n: number) {
         {articles.map((article, i) => (
           <a href={`/articles/${article.slug}`} id={`home-article-card-${i + 1}`}
             class="card-hover group block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:border-blue-200">
-            <div class="h-40 bg-gradient-to-br from-blue-50 to-indigo-100 relative flex items-center justify-center">
+            <div class="h-40 bg-gradient-to-br from-blue-50 to-blue-100 relative flex items-center justify-center">
               {article.image_url ? (
                 <img
                   src={article.image_url}

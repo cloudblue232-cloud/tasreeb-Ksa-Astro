@@ -243,6 +243,7 @@ CREATE POLICY "uploads_admin_delete"
 INSERT INTO site_settings (key, value) VALUES
   ('logo_url',                 ''),
   ('favicon_url',              ''),
+  ('color_scheme',             'ocean'),
   ('site_title',               'كشف التسربات والعزل بالسعودية'),
   ('site_description',         'شركة متخصصة في كشف تسربات المياه والعزل الحراري والمائي في المملكة العربية السعودية'),
   ('site_keywords',            'كشف تسربات المياه, عزل اسطح, عزل خزانات, شركة عزل مائي, كشف تسربات بالرياض, عزل فوم'),
